@@ -1,6 +1,6 @@
 <div align="center">
 
-# <code>[(public/logo/kauxync-dark.svg)](image)</code>
+# ![Alt text](public/logo/kauxync-dark.svg)
 
 **👋 Hi, I'm `Kaushalendra Kumar`, known online as `Kauxync`.**
 
