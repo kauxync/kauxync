@@ -1,0 +1,154 @@
+import type { Metadata, Viewport } from "next";
+import { Sora, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { siteConfig } from "@/config/site";
+import { socialLinks } from "@/config/social";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
+import { BackToTop } from "@/components/ui/back-to-top";
+import "./globals.css";
+
+const sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-sora",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jbmono",
+  display: "swap",
+});
+
+const ttFirsNeue = localFont({
+  src: [
+    { path: "./fonts/TT_Firs_Neue_Medium.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/TT_Firs_Neue_DemiBold.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/TT_Firs_Neue_Bold.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-heading",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
+  title: siteConfig.title,
+  description: siteConfig.description,
+  keywords: [...siteConfig.keywords],
+  applicationName: siteConfig.name,
+  authors: [{ name: siteConfig.realName }],
+  creator: siteConfig.realName,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: siteConfig.name,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    url: "/",
+    locale: "en_US",
+    images: [
+      {
+        url: "/og/og.png",
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.name} — ${siteConfig.realName}`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: ["/og/og.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  icons: {
+    icon: [
+      { url: "/icons/favicon.svg", type: "image/svg+xml" },
+      { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f7f7f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#08080a" },
+  ],
+};
+
+const themeInit = `(function(){try{var k=${JSON.stringify(
+  siteConfig.themeStorageKey
+)};var s=localStorage.getItem(k);var d=s?s==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;var e=document.documentElement;e.classList.toggle("dark",d);e.style.colorScheme=d?"dark":"light";e.classList.add("js");}catch(e){document.documentElement.classList.add("js");}})();`;
+
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: siteConfig.realName,
+  alternateName: siteConfig.name,
+  url: siteConfig.url,
+  email: `mailto:${siteConfig.email}`,
+  jobTitle: "Developer",
+  description: siteConfig.description,
+  sameAs: socialLinks.filter((link) => link.external).map((link) => link.url),
+  knowsAbout: [
+    "Web Development",
+    "Mobile Development",
+    "Software Architecture",
+    "JavaScript",
+    "TypeScript",
+    "React",
+    "Next.js",
+    "Node.js",
+  ],
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${sora.variable} ${ttFirsNeue.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="font-sans">
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded-md focus:bg-foreground focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-background"
+        >
+          Skip to content
+        </a>
+        <Header />
+        <main id="main">{children}</main>
+        <Footer />
+        <BackToTop />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
+      </body>
+    </html>
+  );
+}
