@@ -53,15 +53,3 @@ I'm a **Full-Stack Developer and Software Builder** focused on creating scalable
 ## <code>🏆 GITHUB TROPHIES</code>
 
 ![](https://github-profile-trophy.vercel.app/?username=kauxync&theme=radical&no-frame=false&no-bg=false&margin-w=4)
-
-### <code>✍️ RANDOM DEV QUOTE</code>
-
-![](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=radical)
-
-[![](https://komarev.com/ghpvc/?username=kauxync&icon=0&color=0)](https://visitcount.itsvg.in)
-
-</div>
-
----
-
-<!-- Proudly created with GPRM ( https://gprm.itsvg.in ) -->

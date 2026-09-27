@@ -19,14 +19,6 @@ export const projectsContent = {
 
 export const projects: Project[] = [
   {
-    title: "Bihar Hate Archive",
-    summary:
-      "Placeholder entry — replace this with a real project: what it does, who it is for, and what makes it interesting.",
-    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Postgres"],
-    status: "LIVE",
-    links: [{ label: "GitHub", url: "https://github.com/kauxync"},{label: "Live URL", url: "https://biharhatearchive.org/" }],
-  },
-  {
     title: "Project Bihar",
     summary:
       "Placeholder entry — replace this with a real project: what it does, who it is for, and what makes it interesting.",
