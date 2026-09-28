@@ -28,25 +28,7 @@ int result = (a + b * 2 > c) ? (x & mask) : (y << 1);
 
 C provides a rich set of built-in operators classified into eight primary functional groups:
 
-```
-                          ┌─────────────────────────┐
-                          │    C Operator Suite     │
-                          └────────────┬────────────┘
-                                       │
-      ┌──────────────┬──────────────┬──┴───────────┬──────────────┬──────────────┐
-      │              │              │              │              │              │
-┌─────┴─────┐  ┌─────┴─────┐  ┌─────┴─────┐  ┌─────┴─────┐  ┌─────┴─────┐  ┌─────┴─────┐
-│ Arithmetic│  │Relational │  │  Logical  │  │Assignment │  │ Increment/│  │ Conditional│
-│ +, -, *,  │  │ <, <=, >, │  │ &&, ||, ! │  │ =, +=, -= │  │ Decrement │  │    ? :    │
-│   /, %    │  │ >=, ==, !=│  │           │  │  *=, %=   │  │   ++, --  │  │           │
-└───────────┘  └───────────┘  └───────────┘  └───────────┘  └───────────┘  └───────────┘
-                                                           │              │
-                                                     ┌─────┴─────┐  ┌─────┴─────┐
-                                                     │  Bitwise  │  │  Special  │
-                                                     │&, |, ^, ~,│  │sizeof, ,  │
-                                                     │  <<, >>   │  │  ., ->, * │
-                                                     └───────────┘  └───────────┘
-```
+![C operator suite](/blog/0001_c_operator_suite.png)
 
 ### 1. Arithmetic Operators
 
