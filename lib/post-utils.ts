@@ -6,6 +6,7 @@ export interface PostMeta {
   author?: string;
   ogImage?: string;
   tags?: string[];
+  readingTime?: number;
 }
 
 export const BLOG_PAGE_SIZE = 10;

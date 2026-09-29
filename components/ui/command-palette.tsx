@@ -2,19 +2,24 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toggleTheme } from "@/lib/theme";
+import { toggleTheme, cyclePalette, setPalette, PALETTES, type PaletteName } from "@/lib/theme";
+import { siteConfig } from "@/config/site";
+import { socialLinks } from "@/config/social";
 
 export interface PaletteItem {
   label: string;
   hint?: string;
   href?: string;
-  action?: "theme";
+  action?: "theme" | "cycle-palette" | "set-palette" | "copy-email" | "external";
+  paletteId?: PaletteName;
+  externalUrl?: string;
 }
 
 export function CommandPalette({ items }: { items: PaletteItem[] }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
+  const [feedback, setFeedback] = useState<string | null>(null);
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -22,6 +27,7 @@ export function CommandPalette({ items }: { items: PaletteItem[] }) {
     setOpen(false);
     setQuery("");
     setActive(0);
+    setFeedback(null);
   }, []);
 
   useEffect(() => {
@@ -37,13 +43,34 @@ export function CommandPalette({ items }: { items: PaletteItem[] }) {
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
-  }, [open ]);
+  }, [open]);
+
+  const defaultActions: PaletteItem[] = useMemo(
+    () => [
+      { label: "Copy email address", hint: "Action", action: "copy-email" },
+      { label: "Cycle color theme", hint: "Theme", action: "cycle-palette" },
+      { label: "Toggle dark / light mode", hint: "Theme", action: "theme" },
+      ...PALETTES.map((p) => ({
+        label: `Theme: ${p.name}`,
+        hint: "Palette",
+        action: "set-palette" as const,
+        paletteId: p.id,
+      })),
+      { label: "Send a message", hint: "Connect", href: "/#connect" },
+      ...socialLinks
+        .filter((l) => l.external)
+        .map((l) => ({
+          label: `${l.name} (${l.handle})`,
+          hint: "Social",
+          action: "external" as const,
+          externalUrl: l.url,
+        })),
+    ],
+    [],
+  );
 
   const results = useMemo(() => {
-    const all: PaletteItem[] = [
-      ...items,
-      { label: "Toggle theme", hint: "Action", action: "theme" },
-    ];
+    const all: PaletteItem[] = [...items, ...defaultActions];
     const q = query.trim().toLowerCase();
     if (!q) return all;
     return all.filter(
@@ -51,17 +78,46 @@ export function CommandPalette({ items }: { items: PaletteItem[] }) {
         item.label.toLowerCase().includes(q) ||
         (item.hint ?? "").toLowerCase().includes(q),
     );
-  }, [items, query]);
+  }, [items, defaultActions, query]);
 
   const clamped = results.length === 0 ? 0 : Math.min(active, results.length - 1);
 
   const run = useCallback(
-    (index: number) => {
+    async (index: number) => {
       const item = results[index];
       if (!item) return;
-      if (item.action === "theme") toggleTheme();
-      else if (item.href) router.push(item.href);
-      close();
+
+      if (item.action === "theme") {
+        toggleTheme();
+        setFeedback("Theme toggled!");
+        setTimeout(close, 400);
+      } else if (item.action === "cycle-palette") {
+        const next = cyclePalette();
+        const found = PALETTES.find((p) => p.id === next);
+        setFeedback(`Switched to ${found?.name ?? next}!`);
+        setTimeout(close, 500);
+      } else if (item.action === "set-palette" && item.paletteId) {
+        setPalette(item.paletteId);
+        const found = PALETTES.find((p) => p.id === item.paletteId);
+        setFeedback(`Switched to ${found?.name}!`);
+        setTimeout(close, 500);
+      } else if (item.action === "copy-email") {
+        try {
+          if (navigator?.clipboard?.writeText) {
+            await navigator.clipboard.writeText(siteConfig.email);
+          }
+          setFeedback(`Copied ${siteConfig.email}!`);
+          setTimeout(close, 700);
+        } catch {
+          setFeedback("Could not copy email");
+        }
+      } else if (item.action === "external" && item.externalUrl) {
+        window.open(item.externalUrl, "_blank", "noopener,noreferrer");
+        close();
+      } else if (item.href) {
+        router.push(item.href);
+        close();
+      }
     },
     [results, close, router],
   );
@@ -104,21 +160,28 @@ export function CommandPalette({ items }: { items: PaletteItem[] }) {
             className="absolute inset-0 bg-background/80 backdrop-blur-sm"
             onClick={close}
           />
-          <div className="card relative mx-auto mt-[10vh] max-w-xl overflow-hidden">
-            <input
-              ref={inputRef}
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                setActive(0);
-              }}
-              onKeyDown={onInputKey}
-              placeholder="Type a command or search…"
-              aria-label="Search commands"
-              autoComplete="off"
-              className="w-full border-b border-line bg-transparent px-5 py-4 text-sm font-medium outline-none placeholder:text-muted"
-            />
-            <ul className="max-h-[40vh] overflow-y-auto p-2">
+          <div className="card relative mx-auto mt-[10vh] max-w-xl overflow-hidden shadow-[var(--shadow-lift)]">
+            <div className="relative">
+              <input
+                ref={inputRef}
+                value={query}
+                onChange={(event) => {
+                  setQuery(event.target.value);
+                  setActive(0);
+                }}
+                onKeyDown={onInputKey}
+                placeholder="Type a command or search… (e.g. email, theme, blog)"
+                aria-label="Search commands"
+                autoComplete="off"
+                className="w-full border-b border-line bg-transparent px-5 py-4 text-sm font-medium outline-none placeholder:text-muted"
+              />
+              {feedback ? (
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 rounded-none border border-accent bg-surface-2 px-2.5 py-1 text-xs font-mono font-bold text-accent">
+                  {feedback}
+                </div>
+              ) : null}
+            </div>
+            <ul className="max-h-[44vh] overflow-y-auto p-2">
               {results.map((item, index) => (
                 <li key={`${item.label}-${index}`}>
                   <button
@@ -131,7 +194,19 @@ export function CommandPalette({ items }: { items: PaletteItem[] }) {
                         : "text-foreground"
                     }`}
                   >
-                    <span>{item.label}</span>
+                    <span className="flex items-center gap-2">
+                      {item.action === "set-palette" && item.paletteId ? (
+                        <span
+                          className="inline-block h-2.5 w-2.5 rounded-full border border-line"
+                          style={{
+                            backgroundColor:
+                              PALETTES.find((p) => p.id === item.paletteId)?.accent ??
+                              "currentColor",
+                          }}
+                        />
+                      ) : null}
+                      <span>{item.label}</span>
+                    </span>
                     {item.hint ? (
                       <span
                         className={`text-[0.6875rem] font-bold uppercase tracking-widest ${
@@ -145,12 +220,13 @@ export function CommandPalette({ items }: { items: PaletteItem[] }) {
                 </li>
               ))}
               {results.length === 0 ? (
-                <li className="px-4 py-6 text-sm text-muted">No matches.</li>
+                <li className="px-4 py-6 text-sm text-muted">No matches found for “{query}”.</li>
               ) : null}
             </ul>
-            <p className="border-t border-line px-5 py-2.5 text-[0.6875rem] font-bold uppercase tracking-widest text-muted">
-              ↑↓ navigate · Enter open · Esc close
-            </p>
+            <div className="flex items-center justify-between border-t border-line px-5 py-2.5 text-[0.6875rem] font-bold uppercase tracking-widest text-muted">
+              <span>↑↓ navigate · Enter select · Esc close</span>
+              <span>Kauxync</span>
+            </div>
           </div>
         </div>
       ) : null}

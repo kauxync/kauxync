@@ -1,6 +1,7 @@
 import { Children, type ComponentProps, type ReactNode } from "react";
 import Link from "next/link";
 import { slugify } from "@/lib/post-utils";
+import { CodeBlock } from "@/components/ui/code-block";
 
 function MdxLink({
   href = "",
@@ -31,6 +32,7 @@ function MdxLink({
 export const mdxComponents = {
   a: MdxLink,
   h2: MdxH2,
+  pre: CodeBlock,
 };
 
 function textOf(node: ReactNode): string {

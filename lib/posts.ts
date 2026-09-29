@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
-import type { PostMeta } from "./post-utils";
+import { type PostMeta, readingTime } from "./post-utils";
 
 export type { PostMeta, TocEntry } from "./post-utils";
 
@@ -20,7 +20,7 @@ function postFiles(): string[] {
 }
 
 function parseMeta(slug: string, raw: string): PostMeta {
-  const { data } = matter(raw);
+  const { data, content } = matter(raw);
   return {
     slug,
     title: typeof data.title === "string" ? data.title : slug,
@@ -29,6 +29,7 @@ function parseMeta(slug: string, raw: string): PostMeta {
     author: typeof data.author === "string" ? data.author : undefined,
     ogImage: typeof data.ogImage === "string" ? data.ogImage : undefined,
     tags: Array.isArray(data.tags) ? data.tags.map(String) : undefined,
+    readingTime: readingTime(content),
   };
 }
 

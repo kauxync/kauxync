@@ -3,15 +3,40 @@ import { siteConfig } from "@/config/site";
 import { socialLinks } from "@/config/social";
 import { Section } from "@/components/ui/section";
 import { ButtonLink } from "@/components/ui/button-link";
+import { CopyButton } from "@/components/ui/copy-button";
+import { ContactForm } from "@/components/ui/contact-form";
 import { IconArrowUpRight, IconMail, SocialIcon } from "@/components/ui/icons";
 
 export function Connect() {
+  const collaborationTopics = [
+    "Freelance & Contract Projects",
+    "Full-Stack Engineering Roles",
+    "Open Source & Developer Tools",
+    "Architecture Consultations",
+    "Virtual Coffee & Tech Exchanges",
+  ];
+
   return (
     <Section
       id="connect"
       index={connectContent.index}
       heading={connectContent.heading}
     >
+      <div className="mb-8">
+        <p className="eyebrow">Collaboration Interests</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {collaborationTopics.map((topic) => (
+            <span
+              key={topic}
+              className="inline-flex items-center gap-1.5 border border-line bg-surface-2 px-3 py-1 text-xs font-mono font-medium text-foreground"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              {topic}
+            </span>
+          ))}
+        </div>
+      </div>
+
       <ul className="grid grid-cols-1 gap-px overflow-hidden border border-foreground bg-line shadow-[var(--shadow-card)] sm:grid-cols-2 lg:grid-cols-3">
         {socialLinks.map((link) => (
           <li key={link.icon} className="bg-background">
@@ -42,14 +67,29 @@ export function Connect() {
         ))}
       </ul>
 
+      {/* Interactive Quick Contact Form */}
+      <ContactForm />
+
       <div className="mt-12 flex flex-col items-start gap-5 border-t border-line pt-10 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
-        <p className="max-w-[34ch] font-display text-xl font-medium tracking-tight sm:max-w-none sm:text-2xl">
-          {connectContent.contactPrompt}
-        </p>
-        <ButtonLink href={`mailto:${siteConfig.email}`} variant="outline">
-          <IconMail className="h-4 w-4" />
-          {connectContent.contactAction}
-        </ButtonLink>
+        <div>
+          <p className="max-w-[34ch] font-display text-xl font-medium tracking-tight sm:max-w-none sm:text-2xl">
+            {connectContent.contactPrompt}
+          </p>
+          <p className="mt-1 text-xs font-mono text-muted">
+            Preferred: <span className="text-foreground">{siteConfig.email}</span> · Based in India (Remote)
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <CopyButton
+            variant="outline"
+            label="Copy Email"
+            copiedLabel="Copied!"
+          />
+          <ButtonLink href={`mailto:${siteConfig.email}`}>
+            <IconMail className="h-4 w-4" />
+            {connectContent.contactAction}
+          </ButtonLink>
+        </div>
       </div>
     </Section>
   );

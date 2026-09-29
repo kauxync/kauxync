@@ -23,8 +23,9 @@
 
 @layer base {
 
-  /* ---------- PALETTE 0 · TEAL (original) ---------- */
-  :root {
+  /* ---------- PALETTE 0 · TEAL (default) ---------- */
+  :root,
+  html[data-palette="teal"] {
     --background: #f7fbfa;
     --foreground: #0b1211;
     --muted: #56635f;
@@ -40,7 +41,8 @@
     color-scheme: light;
   }
 
-  .dark {
+  .dark,
+  html[data-palette="teal"].dark {
     --background: #07100f;
     --foreground: #eefaf7;
     --muted: #8fa5a1;
@@ -58,7 +60,7 @@
   /* ---------- END PALETTE 0 ---------- */
 
   /* ---------- PALETTE A · INK + ELECTRIC LIME ---------- */
-  /* :root {
+  html[data-palette="lime"] {
     --background: #f4f6ef;
     --foreground: #10140a;
     --muted: #535c47;
@@ -74,7 +76,7 @@
     color-scheme: light;
   }
 
-  .dark {
+  html[data-palette="lime"].dark {
     --background: #080b05;
     --foreground: #f0f7e3;
     --muted: #94a383;
@@ -88,11 +90,11 @@
     --shadow-lift: 9px 9px 0 rgb(180 239 58 / 0.55);
     --shadow-glow: 6px 6px 0 var(--accent);
     color-scheme: dark;
-  } */
+  }
   /* ---------- END PALETTE A ---------- */
 
   /* ---------- PALETTE B · SWISS COBALT ---------- */
-  /* :root {
+  html[data-palette="cobalt"] {
     --background: #f6f7fb;
     --foreground: #0a1020;
     --muted: #4f5870;
@@ -108,7 +110,7 @@
     color-scheme: light;
   }
 
-  .dark {
+  html[data-palette="cobalt"].dark {
     --background: #070a12;
     --foreground: #eef2fb;
     --muted: #8e9ab5;
@@ -122,11 +124,11 @@
     --shadow-lift: 9px 9px 0 rgb(96 165 250 / 0.55);
     --shadow-glow: 6px 6px 0 var(--accent);
     color-scheme: dark;
-  } */
+  }
   /* ---------- END PALETTE B ---------- */
 
   /* ---------- PALETTE C · VERMILLION POSTER ---------- */
-  /* :root {
+  html[data-palette="vermillion"] {
     --background: #fbf6f1;
     --foreground: #180d08;
     --muted: #64544c;
@@ -142,7 +144,7 @@
     color-scheme: light;
   }
 
-  .dark {
+  html[data-palette="vermillion"].dark {
     --background: #100806;
     --foreground: #fbeee8;
     --muted: #b09a90;
@@ -156,11 +158,11 @@
     --shadow-lift: 9px 9px 0 rgb(255 107 74 / 0.55);
     --shadow-glow: 6px 6px 0 var(--accent);
     color-scheme: dark;
-  } */
+  }
   /* ---------- END PALETTE C ---------- */
 
-  /* ---------- PALETTE D · ELECTRIC VIOLET (ACTIVE) ---------- */
-  /* :root {
+  /* ---------- PALETTE D · ELECTRIC VIOLET ---------- */
+  html[data-palette="violet"] {
     --background: #f9f8fc;
     --foreground: #120e1c;
     --muted: #565070;
@@ -176,7 +178,7 @@
     color-scheme: light;
   }
 
-  .dark {
+  html[data-palette="violet"].dark {
     --background: #0a0812;
     --foreground: #f2eefc;
     --muted: #9d97b5;
@@ -190,7 +192,7 @@
     --shadow-lift: 9px 9px 0 rgb(167 139 250 / 0.55);
     --shadow-glow: 6px 6px 0 var(--accent);
     color-scheme: dark;
-  } */
+  }
   /* ---------- END PALETTE D ---------- */
 
   html {

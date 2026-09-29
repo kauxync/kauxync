@@ -15,9 +15,16 @@ export function ProjectCard({ project, index, delay = 0 }: ProjectCardProps) {
     <Reveal delay={delay} variant="scale" className="h-full">
       <article className="card card-hover flex h-full flex-col p-6 sm:p-7">
         <div className="flex items-center justify-between gap-4">
-          <span className="chip">{String(index + 1).padStart(2, "0")}</span>
+          <div className="flex items-center gap-2">
+            <span className="chip">{String(index + 1).padStart(2, "0")}</span>
+            {project.badge ? (
+              <span className="text-[0.6875rem] font-mono uppercase tracking-widest text-muted">
+                {project.badge}
+              </span>
+            ) : null}
+          </div>
           {status ? (
-            <span className="inline-flex items-center gap-2 text-xs font-medium text-muted">
+            <span className="inline-flex items-center gap-2 text-xs font-mono font-medium uppercase tracking-wider text-muted">
               <span
                 aria-hidden
                 className="dot-pulse h-1.5 w-1.5 rounded-full bg-accent"
