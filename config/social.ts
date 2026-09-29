@@ -4,6 +4,7 @@ export type SocialIconKey =
   | "instagram"
   | "x"
   | "youtube"
+  | "aws"
   | "mail";
 
 export interface SocialLink {
@@ -48,6 +49,13 @@ export const socialLinks: SocialLink[] = [
     url: "https://youtube.com/@kauxync",
     handle: "@kauxync",
     icon: "youtube",
+    external: true,
+  },
+  {
+    name: "AWS Builder ID",
+    url: "https://builder.aws.com/community/@kauxync",
+    handle: "@kauxync",
+    icon: "aws",
     external: true,
   },
   {

@@ -26,7 +26,7 @@ export function Ticker() {
   );
 
   return (
-    <div className="overflow-hidden border-y-2 border-foreground bg-foreground py-3 text-background">
+    <div className="overflow-hidden border-y-2 border-foreground bg-[#fbbf24] dark:bg-[#b45309] py-3 text-[#18181b] dark:text-[#fef3c7] font-bold shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]">
       <div className="ticker-track">
         {row(false)}
         {row(true)}

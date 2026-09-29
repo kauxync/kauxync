@@ -12,12 +12,14 @@ const sora = Sora({
   subsets: ["latin"],
   variable: "--font-sora",
   display: "swap",
+  preload: false,
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jbmono",
   display: "swap",
+  preload: false,
 });
 
 const ttFirsNeue = localFont({
@@ -28,6 +30,7 @@ const ttFirsNeue = localFont({
   ],
   variable: "--font-heading",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {

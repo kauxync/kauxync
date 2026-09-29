@@ -68,14 +68,24 @@ export const workContent = {
   index: "04",
 } as const;
 
+export const philosophyContent = {
+  heading: "Philosophy & Principles",
+  index: "05",
+} as const;
+
+export const timelineContent = {
+  heading: "Journey & Milestones",
+  index: "06",
+} as const;
+
 export const writingContent = {
   heading: "Latest Writing",
-  index: "05",
+  index: "07",
 } as const;
 
 export const currentlyContent = {
   heading: "Currently",
-  index: "06",
+  index: "08",
   items: [
     { status: "Building", detail: "Next.js applications & open-source developer toolkits" },
     { status: "Exploring", detail: "Low-latency systems & cloud architectures" },
@@ -84,9 +94,14 @@ export const currentlyContent = {
   ],
 } as const;
 
+export const guestbookContent = {
+  heading: "Community Guestbook",
+  index: "09",
+} as const;
+
 export const connectContent = {
   heading: "Find Me",
-  index: "07",
+  index: "10",
   contactPrompt: "Have a project, role, or idea you'd like to bring to life?",
   contactAction: "Email Me Directly",
 } as const;

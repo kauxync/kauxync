@@ -5,6 +5,7 @@ interface ButtonLinkProps {
   children: ReactNode;
   variant?: "primary" | "outline";
   external?: boolean;
+  className?: string;
   "aria-label"?: string;
 }
 
@@ -13,9 +14,10 @@ export function ButtonLink({
   children,
   variant = "primary",
   external = false,
+  className = "",
   ...rest
 }: ButtonLinkProps) {
-  const className = `btn ${variant === "primary" ? "btn-primary" : "btn-outline"}`;
+  const combinedClassName = `btn ${variant === "primary" ? "btn-primary" : "btn-outline"} ${className}`;
 
   if (external) {
     return (
@@ -23,7 +25,7 @@ export function ButtonLink({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={className}
+        className={combinedClassName}
         {...rest}
       >
         {children}
@@ -32,7 +34,7 @@ export function ButtonLink({
   }
 
   return (
-    <a href={href} className={className} {...rest}>
+    <a href={href} className={combinedClassName} {...rest}>
       {children}
     </a>
   );

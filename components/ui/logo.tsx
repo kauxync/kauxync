@@ -5,7 +5,7 @@ interface LogoProps {
   eager?: boolean;
 }
 
-export function SiteLogo({ className = "", eager = false }: LogoProps) {
+export function SiteLogo({ className = "" }: LogoProps) {
   return (
     <span className={`relative block ${className}`}>
       <Image
@@ -13,7 +13,7 @@ export function SiteLogo({ className = "", eager = false }: LogoProps) {
         alt="Kauxync"
         width={730}
         height={40}
-        loading={eager ? "eager" : "lazy"}
+        loading="lazy"
         decoding="async"
         unoptimized
         className="block h-auto w-full dark:hidden"
@@ -24,7 +24,7 @@ export function SiteLogo({ className = "", eager = false }: LogoProps) {
         aria-hidden="true"
         width={730}
         height={40}
-        loading={eager ? "eager" : "lazy"}
+        loading="lazy"
         decoding="async"
         unoptimized
         className="hidden h-auto w-full dark:block"
@@ -33,7 +33,7 @@ export function SiteLogo({ className = "", eager = false }: LogoProps) {
   );
 }
 
-export function SiteLogoMark({ className = "", eager = false }: LogoProps) {
+export function SiteLogoMark({ className = "" }: LogoProps) {
   return (
     <span className={`relative block ${className}`}>
       <Image
@@ -41,7 +41,7 @@ export function SiteLogoMark({ className = "", eager = false }: LogoProps) {
         alt="Kauxync"
         width={730}
         height={40}
-        loading={eager ? "eager" : "lazy"}
+        loading="lazy"
         decoding="async"
         unoptimized
         className="block h-auto w-full dark:hidden"
@@ -52,7 +52,7 @@ export function SiteLogoMark({ className = "", eager = false }: LogoProps) {
         aria-hidden="true"
         width={730}
         height={40}
-        loading={eager ? "eager" : "lazy"}
+        loading="lazy"
         decoding="async"
         unoptimized
         className="hidden h-auto w-full dark:block"

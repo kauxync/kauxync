@@ -25,9 +25,12 @@ export function About() {
           ))}
         </div>
 
-        <aside className="card border border-foreground bg-surface p-6 shadow-[var(--shadow-card)]">
-          <p className="eyebrow">At A Glance</p>
-          <dl className="mt-4 divide-y divide-line border-y border-line text-xs font-mono">
+        <aside className="card-hover border-2 border-foreground bg-[#fffdf5] dark:bg-[#1a140a] p-6 shadow-[6px_6px_0px_#f59e0b] dark:shadow-[6px_6px_0px_#d97706]">
+          <div className="flex items-center justify-between border-b border-line pb-3">
+            <p className="eyebrow text-[#b45309] dark:text-[#fcd34d] font-bold">At A Glance</p>
+            <span className="h-2 w-2 rounded-full bg-[#f59e0b] animate-ping" />
+          </div>
+          <dl className="mt-3 divide-y divide-line border-b border-line text-xs font-mono">
             {facts.map((fact) => (
               <div key={fact.label} className="py-3">
                 <dt className="text-muted uppercase tracking-wider">{fact.label}</dt>
@@ -35,10 +38,10 @@ export function About() {
               </div>
             ))}
           </dl>
-          <div className="mt-5 pt-2">
+          <div className="mt-5 pt-1">
             <CopyButton
               variant="outline"
-              className="w-full justify-center !min-h-10 text-xs"
+              className="w-full justify-center !min-h-10 text-xs !border-2 !border-foreground bg-background hover:!bg-[#fbbf24] hover:!text-[#18181b] !shadow-[3px_3px_0px_#18181b]"
               label="Copy Email"
               copiedLabel="Copied!"
             />

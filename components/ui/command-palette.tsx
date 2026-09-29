@@ -10,7 +10,7 @@ export interface PaletteItem {
   label: string;
   hint?: string;
   href?: string;
-  action?: "theme" | "cycle-palette" | "set-palette" | "copy-email" | "external";
+  action?: "theme" | "cycle-palette" | "set-palette" | "copy-email" | "open-terminal" | "external";
   paletteId?: PaletteName;
   externalUrl?: string;
 }
@@ -56,6 +56,8 @@ export function CommandPalette({ items }: { items: PaletteItem[] }) {
         action: "set-palette" as const,
         paletteId: p.id,
       })),
+      { label: "Open Developer Terminal", hint: "Ctrl+`", action: "open-terminal" },
+      { label: "Uses & Setup", hint: "Page", href: "/uses" },
       { label: "Send a message", hint: "Connect", href: "/#connect" },
       ...socialLinks
         .filter((l) => l.external)
@@ -110,6 +112,11 @@ export function CommandPalette({ items }: { items: PaletteItem[] }) {
           setTimeout(close, 700);
         } catch {
           setFeedback("Could not copy email");
+        }
+      } else if (item.action === "open-terminal") {
+        close();
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("kauxync-open-terminal"));
         }
       } else if (item.action === "external" && item.externalUrl) {
         window.open(item.externalUrl, "_blank", "noopener,noreferrer");

@@ -9,11 +9,26 @@ import { IconArrowUpRight, IconMail, SocialIcon } from "@/components/ui/icons";
 
 export function Connect() {
   const collaborationTopics = [
-    "Freelance & Contract Projects",
-    "Full-Stack Engineering Roles",
-    "Open Source & Developer Tools",
-    "Architecture Consultations",
-    "Virtual Coffee & Tech Exchanges",
+    {
+      title: "Freelance & Contract Projects",
+      badge: "bg-[#fff7ed] text-[#c2410c] border-[#fdba74] dark:bg-[#431407]/60 dark:text-[#fdba74] dark:border-[#c2410c]",
+    },
+    {
+      title: "Full-Stack Engineering Roles",
+      badge: "bg-[#f0fdf4] text-[#15803d] border-[#86efac] dark:bg-[#052e16]/60 dark:text-[#86efac] dark:border-[#15803d]",
+    },
+    {
+      title: "Open Source & Developer Tools",
+      badge: "bg-[#f5f3ff] text-[#6d28d9] border-[#c4b5fd] dark:bg-[#2e1065]/60 dark:text-[#c4b5fd] dark:border-[#6d28d9]",
+    },
+    {
+      title: "Architecture Consultations",
+      badge: "bg-[#f0f9ff] text-[#0369a1] border-[#7dd3fc] dark:bg-[#082f49]/60 dark:text-[#7dd3fc] dark:border-[#0369a1]",
+    },
+    {
+      title: "Virtual Coffee & Tech Exchanges",
+      badge: "bg-[#fffbeb] text-[#b45309] border-[#fde68a] dark:bg-[#451a03]/60 dark:text-[#fcd34d] dark:border-[#b45309]",
+    },
   ];
 
   return (
@@ -24,37 +39,37 @@ export function Connect() {
     >
       <div className="mb-8">
         <p className="eyebrow">Collaboration Interests</p>
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2.5">
           {collaborationTopics.map((topic) => (
             <span
-              key={topic}
-              className="inline-flex items-center gap-1.5 border border-line bg-surface-2 px-3 py-1 text-xs font-mono font-medium text-foreground"
+              key={topic.title}
+              className={`inline-flex items-center gap-1.5 border px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider shadow-[2px_2px_0px_rgba(0,0,0,0.06)] ${topic.badge}`}
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-              {topic}
+              <span className="h-2 w-2 rounded-full bg-current" />
+              {topic.title}
             </span>
           ))}
         </div>
       </div>
 
-      <ul className="grid grid-cols-1 gap-px overflow-hidden border border-foreground bg-line shadow-[var(--shadow-card)] sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid grid-cols-1 gap-px overflow-hidden border-2 border-foreground bg-line shadow-[6px_6px_0px_#18181b] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.15)] sm:grid-cols-2 lg:grid-cols-3">
         {socialLinks.map((link) => (
           <li key={link.icon} className="bg-background">
             <a
               href={link.url}
               target={link.external ? "_blank" : undefined}
               rel={link.external ? "noopener noreferrer" : undefined}
-              className="group flex h-full min-h-[4.75rem] items-center gap-4 p-5 transition-colors duration-200 hover:bg-foreground sm:p-6"
+              className="group flex h-full min-h-[4.75rem] items-center gap-4 p-5 transition-all duration-200 hover:bg-surface-2 sm:p-6"
             >
               <SocialIcon
                 name={link.icon}
                 className="h-5 w-5 shrink-0 text-muted transition-colors duration-200 group-hover:text-accent"
               />
               <span className="min-w-0 flex-1">
-                <span className="block text-sm font-semibold tracking-tight group-hover:text-background">
+                <span className="block text-sm font-bold tracking-tight text-foreground group-hover:text-accent">
                   {link.name}
                 </span>
-                <span className="mt-0.5 block truncate text-xs text-muted group-hover:text-background/70">
+                <span className="mt-0.5 block truncate text-xs font-mono text-muted">
                   {link.handle}
                 </span>
               </span>
@@ -72,11 +87,11 @@ export function Connect() {
 
       <div className="mt-12 flex flex-col items-start gap-5 border-t border-line pt-10 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
         <div>
-          <p className="max-w-[34ch] font-display text-xl font-medium tracking-tight sm:max-w-none sm:text-2xl">
+          <p className="max-w-[34ch] font-display text-xl font-bold tracking-tight sm:max-w-none sm:text-2xl">
             {connectContent.contactPrompt}
           </p>
           <p className="mt-1 text-xs font-mono text-muted">
-            Preferred: <span className="text-foreground">{siteConfig.email}</span> · Based in India (Remote)
+            Preferred: <span className="font-bold text-foreground">{siteConfig.email}</span> · Based in India (Remote)
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -84,8 +99,12 @@ export function Connect() {
             variant="outline"
             label="Copy Email"
             copiedLabel="Copied!"
+            className="!border-2 !border-foreground bg-surface hover:!bg-[#fef3c7] hover:!text-[#18181b] !shadow-[3px_3px_0px_#f59e0b]"
           />
-          <ButtonLink href={`mailto:${siteConfig.email}`}>
+          <ButtonLink
+            href={`mailto:${siteConfig.email}`}
+            className="!bg-[#fbbf24] hover:!bg-[#f59e0b] !text-[#18181b] !border-2 !border-foreground !shadow-[3px_3px_0px_#18181b]"
+          >
             <IconMail className="h-4 w-4" />
             {connectContent.contactAction}
           </ButtonLink>

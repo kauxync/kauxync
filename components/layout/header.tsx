@@ -3,6 +3,7 @@ import { siteConfig } from "@/config/site";
 import { getAllPosts } from "@/lib/posts";
 import { SiteLogo, SiteLogoMark } from "@/components/ui/logo";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { SoundToggle } from "@/components/ui/sound-toggle";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { CommandPalette, type PaletteItem } from "@/components/ui/command-palette";
 
@@ -30,7 +31,7 @@ export function Header() {
           className="group shrink-0 py-2 transition-opacity duration-300 hover:opacity-70"
         >
           <SiteLogoMark className="h-auto w-[4.75rem] sm:hidden" />
-          <SiteLogo className="hidden w-32 sm:block lg:w-36" eager />
+          <SiteLogo className="hidden w-32 sm:block lg:w-36" />
         </Link>
 
         <div className="flex items-center gap-1 sm:gap-2">
@@ -50,6 +51,7 @@ export function Header() {
           </nav>
           <MobileNav items={siteConfig.nav} />
           <CommandPalette items={paletteItems} />
+          <SoundToggle />
           <ThemeToggle />
         </div>
       </div>
