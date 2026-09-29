@@ -60,16 +60,16 @@ export const projects: Project[] = [
     ],
   },
   {
-    title: "Article Translator IE",
+    title: "Omni Article",
     summary:
-      "Multilingual translation and localization utility built to streamline article and technical documentation adaptation across diverse language audiences with clean responsive output.",
-    tech: ["JavaScript", "Web APIs", "Tailwind CSS", "Vercel"],
+      "Universal article reader and multi-language translation platform built to streamline article reading and localization across 30+ languages with clean responsive output, dual-view, and interactive vocabulary.",
+    tech: ["JavaScript", "Node.js", "Express", "Vercel"],
     status: "LIVE",
-    badge: "Web App",
+    badge: "Universal Reader",
     featured: true,
     links: [
-      { label: "Live App", url: "https://article-ie.vercel.app" },
-      { label: "GitHub", url: "https://github.com/kauxync/article-translator-IE" },
+      { label: "Live App", url: "https://project-omniarticle.kauxync.in/" },
+      { label: "GitHub", url: "https://github.com/kauxync/OmniArticle" },
     ],
   },
   {

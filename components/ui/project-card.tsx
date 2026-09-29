@@ -39,7 +39,7 @@ const PROJECT_THEMES = [
     accentText: "text-[#4338ca] dark:text-[#818cf8]",
     pulse: "bg-[#4f46e5]",
   },
-  // 3: Crisp Sky / Cyan (Article Translator)
+  // 3: Crisp Sky / Cyan (Omni Article)
   {
     bg: "bg-[#f6fcff] dark:bg-[#071926]",
     border: "border-foreground",
