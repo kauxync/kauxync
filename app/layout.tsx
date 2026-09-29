@@ -35,12 +35,16 @@ const ttFirsNeue = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: siteConfig.title,
+  title: {
+    default: siteConfig.title,
+    template: `%s | ${siteConfig.name}`,
+  },
   description: siteConfig.description,
   keywords: [...siteConfig.keywords],
   applicationName: siteConfig.name,
-  authors: [{ name: siteConfig.realName }],
+  authors: [{ name: siteConfig.realName, url: siteConfig.url }],
   creator: siteConfig.realName,
+  publisher: siteConfig.realName,
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
@@ -100,25 +104,44 @@ const themeInit = `(function(){try{var k=${JSON.stringify(
   siteConfig.themeStorageKey
 )};var s=localStorage.getItem(k);var d=s?s==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;var e=document.documentElement;e.classList.toggle("dark",d);e.style.colorScheme=d?"dark":"light";var p=localStorage.getItem("kauxync-palette");if(p){e.setAttribute("data-palette",p);}e.classList.add("js");}catch(e){document.documentElement.classList.add("js");}})();`;
 
-const personJsonLd = {
+const siteSchema = {
   "@context": "https://schema.org",
-  "@type": "Person",
-  name: siteConfig.realName,
-  alternateName: siteConfig.name,
-  url: siteConfig.url,
-  email: `mailto:${siteConfig.email}`,
-  jobTitle: "Developer",
-  description: siteConfig.description,
-  sameAs: socialLinks.filter((link) => link.external).map((link) => link.url),
-  knowsAbout: [
-    "Web Development",
-    "Mobile Development",
-    "Software Architecture",
-    "JavaScript",
-    "TypeScript",
-    "React",
-    "Next.js",
-    "Node.js",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": `${siteConfig.url}/#person`,
+      name: siteConfig.realName,
+      alternateName: siteConfig.name,
+      url: siteConfig.url,
+      image: `${siteConfig.url}/og/og.png`,
+      email: `mailto:${siteConfig.email}`,
+      jobTitle: "Full-Stack Developer & Software Builder",
+      description: siteConfig.description,
+      sameAs: socialLinks.filter((link) => link.external).map((link) => link.url),
+      knowsAbout: [
+        "Web Development",
+        "Mobile Development",
+        "Software Architecture",
+        "JavaScript",
+        "TypeScript",
+        "React",
+        "Next.js",
+        "Node.js",
+        "PostgreSQL",
+        "Systems Programming",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteConfig.url}/#website`,
+      url: siteConfig.url,
+      name: siteConfig.name,
+      description: siteConfig.description,
+      publisher: {
+        "@id": `${siteConfig.url}/#person`,
+      },
+      inLanguage: "en-US",
+    },
   ],
 };
 
@@ -148,7 +171,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c"),
+            __html: JSON.stringify(siteSchema).replace(/</g, "\\u003c"),
           }}
         />
       </body>

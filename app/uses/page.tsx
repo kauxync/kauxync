@@ -9,6 +9,30 @@ export const metadata: Metadata = {
   description:
     "Hardware, development tools, editor setups, and software Kaushalendra Kumar (Kauxync) uses daily.",
   alternates: { canonical: "/uses" },
+  openGraph: {
+    type: "website",
+    siteName: siteConfig.name,
+    title: `Uses & Setup — ${siteConfig.name}`,
+    description:
+      "Hardware, development tools, editor setups, and software Kaushalendra Kumar (Kauxync) uses daily.",
+    url: "/uses",
+    locale: "en_US",
+    images: [
+      {
+        url: "/og/og.png",
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.name} — Uses & Setup`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Uses & Setup — ${siteConfig.name}`,
+    description:
+      "Hardware, development tools, editor setups, and software Kaushalendra Kumar (Kauxync) uses daily.",
+    images: ["/og/og.png"],
+  },
 };
 
 const CATEGORY_COLORS: Record<string, { bg: string; shadow: string; badge: string; accent: string }> = {

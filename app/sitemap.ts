@@ -7,8 +7,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: siteConfig.url,
       lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 1,
+      changeFrequency: "weekly",
+      priority: 1.0,
     },
     {
       url: `${siteConfig.url}/projects`,
@@ -19,14 +19,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${siteConfig.url}/blog`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
+      changeFrequency: "weekly",
       priority: 0.8,
+    },
+    {
+      url: `${siteConfig.url}/uses`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
     ...getAllPosts().map((post) => ({
       url: `${siteConfig.url}/blog/${post.slug}`,
       lastModified: new Date(post.date),
-      changeFrequency: "yearly" as const,
-      priority: 0.6,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
     })),
   ];
 }

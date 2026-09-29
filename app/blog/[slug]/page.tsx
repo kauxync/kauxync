@@ -66,14 +66,32 @@ export default async function PostPage({ params }: PageProps) {
   if (!post) notFound();
   const toc = getToc(post.content);
   const author = post.author ?? siteConfig.realName;
+  const ogImageUrl = post.ogImage
+    ? `${siteConfig.url}${post.ogImage.startsWith("/") ? "" : "/"}${post.ogImage}`
+    : `${siteConfig.url}/og/og.png`;
+
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
+    image: [ogImageUrl],
     datePublished: post.date,
-    author: { "@type": "Person", name: author },
-    mainEntityOfPage: `${siteConfig.url}/blog/${post.slug}`,
+    dateModified: post.date,
+    author: {
+      "@type": "Person",
+      name: author,
+      url: siteConfig.url,
+    },
+    publisher: {
+      "@type": "Person",
+      name: siteConfig.realName,
+      url: siteConfig.url,
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${siteConfig.url}/blog/${post.slug}`,
+    },
   };
 
   return (

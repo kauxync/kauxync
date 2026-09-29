@@ -40,6 +40,10 @@ export function GET(): Response {
         `- [${post.title}](${siteConfig.url}/blog/${post.slug}): ${post.description}`,
     ),
     ``,
+    `## Uses & Setup`,
+    ``,
+    `- Full setup details: ${siteConfig.url}/uses`,
+    ``,
     `## Links`,
     ``,
     ...socialLinks
