@@ -48,6 +48,19 @@ export const projects: Project[] = [
     ],
   },
   {
+    title: "FlexStudio",
+    summary:
+      "Premium digital marketplace and freelancing platform for buying and selling web templates, UI kits, and full-stack source code packages with interactive previews, multi-role auth, and checkout flow.",
+    tech: ["Next.js 16", "React 19", "Tailwind CSS v4", "Prisma", "Neon PostgreSQL"],
+    status: "LIVE",
+    badge: "Digital Marketplace",
+    featured: true,
+    links: [
+      { label: "Live Platform", url: "https://flexstudio.kauxync.in" },
+      { label: "GitHub", url: "https://github.com/kauxync/flexstudio" },
+    ],
+  },
+  {
     title: "Velox SaaS Platform",
     summary:
       "High-performance, conversion-optimized SaaS marketing platform and component architecture featuring accessible micro-interactions, responsive design patterns, and sub-second load speeds.",

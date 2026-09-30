@@ -29,7 +29,17 @@ const PROJECT_THEMES = [
     accentText: "text-[#15803d] dark:text-[#4ade80]",
     pulse: "bg-[#16a34a]",
   },
-  // 2: Electric Indigo (Velox SaaS)
+  // 2: Royal Violet / Electric Indigo (FlexStudio)
+  {
+    bg: "bg-[#faf5ff] dark:bg-[#1b0d2d]",
+    border: "border-foreground",
+    shadow: "shadow-[6px_6px_0px_#a855f7] dark:shadow-[6px_6px_0px_#9333ea]",
+    badge: "bg-[#f3e8ff] text-[#6b21a8] border-[#e9d5ff] dark:bg-[#3b0764] dark:text-[#f3e8ff]",
+    chip: "bg-[#faf5ff] text-[#7e22ce] border-[#e9d5ff] dark:bg-[#2e1065] dark:text-[#e9d5ff]",
+    accentText: "text-[#7e22ce] dark:text-[#c084fc]",
+    pulse: "bg-[#9333ea]",
+  },
+  // 3: Electric Indigo (Velox SaaS)
   {
     bg: "bg-[#f8f9ff] dark:bg-[#10122e]",
     border: "border-foreground",
@@ -39,7 +49,7 @@ const PROJECT_THEMES = [
     accentText: "text-[#4338ca] dark:text-[#818cf8]",
     pulse: "bg-[#4f46e5]",
   },
-  // 3: Crisp Sky / Cyan (Omni Article)
+  // 4: Crisp Sky / Cyan (Omni Article)
   {
     bg: "bg-[#f6fcff] dark:bg-[#071926]",
     border: "border-foreground",
@@ -49,15 +59,15 @@ const PROJECT_THEMES = [
     accentText: "text-[#0369a1] dark:text-[#38bdf8]",
     pulse: "bg-[#0284c7]",
   },
-  // 4: Royal Violet (Kauxync Platform)
+  // 5: Radiant Rose / Fuchsia (Kauxync Platform)
   {
-    bg: "bg-[#faf5ff] dark:bg-[#1b0d2d]",
+    bg: "bg-[#fff5f8] dark:bg-[#1a0a14]",
     border: "border-foreground",
-    shadow: "shadow-[6px_6px_0px_#a855f7] dark:shadow-[6px_6px_0px_#9333ea]",
-    badge: "bg-[#f3e8ff] text-[#6b21a8] border-[#e9d5ff] dark:bg-[#3b0764] dark:text-[#f3e8ff]",
-    chip: "bg-[#faf5ff] text-[#7e22ce] border-[#e9d5ff] dark:bg-[#2e1065] dark:text-[#e9d5ff]",
-    accentText: "text-[#7e22ce] dark:text-[#c084fc]",
-    pulse: "bg-[#9333ea]",
+    shadow: "shadow-[6px_6px_0px_#f43f5e] dark:shadow-[6px_6px_0px_#e11d48]",
+    badge: "bg-[#ffe4e6] text-[#9f1239] border-[#fecdd3] dark:bg-[#4c0519] dark:text-[#ffe4e6]",
+    chip: "bg-[#fff1f2] text-[#be123c] border-[#fecdd3] dark:bg-[#320713] dark:text-[#fecdd3]",
+    accentText: "text-[#be123c] dark:text-[#fb7185]",
+    pulse: "bg-[#e11d48]",
   },
 ];
 
