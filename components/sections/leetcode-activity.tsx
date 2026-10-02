@@ -1,5 +1,7 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
 import { getSocial } from "@/config/social";
-import { siteConfig } from "@/config/site";
 import { Reveal } from "@/components/ui/reveal";
 import { IconArrowUpRight, IconLeetcode } from "@/components/ui/icons";
 
@@ -54,6 +56,42 @@ const LEVEL_STYLES = [
   "bg-[#2cbb5d] border border-emerald-400",
 ];
 
+const INITIAL_FALLBACK: LeetcodeData = {
+  submissions: [
+    {
+      title: "Second Highest Salary",
+      titleSlug: "second-highest-salary",
+      timestamp: "1790917104",
+      statusDisplay: "Accepted",
+      lang: "mysql",
+    },
+    {
+      title: "Combine Two Tables",
+      titleSlug: "combine-two-tables",
+      timestamp: "1790916837",
+      statusDisplay: "Accepted",
+      lang: "mysql",
+    },
+    {
+      title: "Two Sum",
+      titleSlug: "two-sum",
+      timestamp: "1790909245",
+      statusDisplay: "Accepted",
+      lang: "c",
+    },
+  ],
+  stats: {
+    all: 3,
+    easy: 2,
+    medium: 1,
+    hard: 0,
+    ranking: 5000001,
+  },
+  calendar: {
+    "1790899200": 3,
+  },
+};
+
 function timeAgo(seconds: string | number): string {
   const ts = Number(seconds) * 1000;
   const diff = Math.max(1, Math.floor((Date.now() - ts) / 1000));
@@ -83,6 +121,7 @@ function formatLanguage(lang: string): string {
     golang: "Go",
     csharp: "C#",
     sql: "SQL",
+    mysql: "MySQL",
   };
   return map[lang.toLowerCase()] ?? lang.toUpperCase();
 }
@@ -191,116 +230,11 @@ function generateYearDays(calendarMap: Record<string, number>): {
   };
 }
 
-async function fetchLeetcode(username: string): Promise<LeetcodeData> {
-  try {
-    const response = await fetch("https://leetcode.com/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Referer: "https://leetcode.com",
-        "User-Agent": siteConfig.url.replace(/^https?:\/\//, ""),
-      },
-      body: JSON.stringify({
-        query: `
-          query getUserLeetcodeProfile($username: String!) {
-            recentSubmissionList(username: $username) {
-              title
-              titleSlug
-              timestamp
-              statusDisplay
-              lang
-            }
-            matchedUser(username: $username) {
-              submissionCalendar
-              profile {
-                ranking
-              }
-              submitStatsGlobal {
-                acSubmissionNum {
-                  difficulty
-                  count
-                }
-              }
-            }
-          }
-        `,
-        variables: { username },
-      }),
-      next: { revalidate: 3600 },
-    });
+export function LeetcodeActivity() {
+  const [data, setData] = useState<LeetcodeData>(INITIAL_FALLBACK);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastSynced, setLastSynced] = useState<Date | null>(null);
 
-    if (response.ok) {
-      const json = await response.json();
-      const submissions: LeetcodeSubmission[] =
-        json.data?.recentSubmissionList ?? [];
-      const acList: { difficulty: string; count: number }[] =
-        json.data?.matchedUser?.submitStatsGlobal?.acSubmissionNum ?? [];
-      const ranking = json.data?.matchedUser?.profile?.ranking;
-      const rawCalendar = json.data?.matchedUser?.submissionCalendar;
-      let calendar: Record<string, number> = {};
-
-      if (typeof rawCalendar === "string") {
-        try {
-          calendar = JSON.parse(rawCalendar);
-        } catch {
-          calendar = {};
-        }
-      }
-
-      const getCount = (diff: string) =>
-        acList.find((i) => i.difficulty.toLowerCase() === diff.toLowerCase())
-          ?.count ?? 0;
-
-      if (
-        submissions.length > 0 ||
-        acList.length > 0 ||
-        Object.keys(calendar).length > 0
-      ) {
-        return {
-          submissions: submissions.slice(0, 8),
-          stats: {
-            all: getCount("all"),
-            easy: getCount("easy"),
-            medium: getCount("medium"),
-            hard: getCount("hard"),
-            ranking,
-          },
-          calendar,
-        };
-      }
-    }
-  } catch (error) {
-    console.warn(
-      "Could not fetch live LeetCode data, using verified fallback:",
-      error,
-    );
-  }
-
-  // Verified fallback data for kauxync
-  return {
-    submissions: [
-      {
-        title: "Two Sum",
-        titleSlug: "two-sum",
-        timestamp: "1790909245",
-        statusDisplay: "Accepted",
-        lang: "c",
-      },
-    ],
-    stats: {
-      all: 1,
-      easy: 1,
-      medium: 0,
-      hard: 0,
-      ranking: 5000001,
-    },
-    calendar: {
-      "1790899200": 1,
-    },
-  };
-}
-
-export async function LeetcodeActivity() {
   let leetcodeUrl = "https://leetcode.com/u/kauxync/";
   let username = "kauxync";
   try {
@@ -316,7 +250,45 @@ export async function LeetcodeActivity() {
     // default to kauxync
   }
 
-  const { submissions, stats, calendar } = await fetchLeetcode(username);
+  const syncData = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await fetch("/api/leetcode", {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          setData(json.data);
+          setLastSynced(new Date());
+        }
+      }
+    } catch (err) {
+      console.warn("Could not sync live LeetCode data:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    // 1. Initial live fetch on mount
+    syncData();
+
+    // 2. Auto refresh when user switches back to this browser tab
+    const handleFocus = () => syncData();
+    window.addEventListener("focus", handleFocus);
+
+    // 3. Periodic polling every 45 seconds
+    const interval = setInterval(syncData, 45000);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      clearInterval(interval);
+    };
+  }, [syncData]);
+
+  const { submissions, stats, calendar } = data;
   const {
     weeks,
     monthLabels,
@@ -328,11 +300,10 @@ export async function LeetcodeActivity() {
   // SVG ring calculations for Solved Problems circle
   const radius = 38;
   const circumference = 2 * Math.PI * radius;
-  // Estimate relative fraction out of total available problems (approx 3500)
   const totalLibrary = 3500;
   const solvedPercent = Math.min(100, (stats.all / totalLibrary) * 100);
   const strokeDashoffset =
-    circumference - (circumference * Math.max(solvedPercent, 1.5)) / 100;
+    circumference - (circumference * Math.max(solvedPercent, 2)) / 100;
 
   return (
     <section aria-label="LeetCode activity" className="border-t border-line">
@@ -344,6 +315,22 @@ export async function LeetcodeActivity() {
               <div className="flex items-center gap-2">
                 <IconLeetcode className="h-4 w-4 text-[#ffa116]" />
                 <p className="eyebrow">LeetCode</p>
+                <button
+                  type="button"
+                  onClick={syncData}
+                  disabled={isRefreshing}
+                  title={
+                    lastSynced
+                      ? `Last synced: ${lastSynced.toLocaleTimeString()} (click to refresh)`
+                      : "Click to refresh live stats"
+                  }
+                  className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 transition-colors hover:bg-emerald-500/20 dark:text-emerald-400"
+                >
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full bg-emerald-500 ${isRefreshing ? "animate-spin" : "animate-pulse"}`}
+                  />
+                  <span>{isRefreshing ? "Syncing..." : "Live"}</span>
+                </button>
               </div>
               <h2 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
                 Problem Solving

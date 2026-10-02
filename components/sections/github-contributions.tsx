@@ -1,5 +1,7 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
 import { getSocial } from "@/config/social";
-import { siteConfig } from "@/config/site";
 import { Reveal } from "@/components/ui/reveal";
 import { IconArrowUpRight, IconGithub } from "@/components/ui/icons";
 
@@ -7,21 +9,6 @@ interface ContributionDay {
   date: string;
   count: number;
   level: number;
-}
-
-interface GithubEvent {
-  id: string;
-  type: string;
-  repo: { name: string };
-  created_at: string;
-  payload?: {
-    commits?: { message: string }[];
-    action?: string;
-    ref?: string;
-    ref_type?: string;
-    release?: { tag_name: string };
-    pull_request?: { title: string; number: number; merged?: boolean };
-  };
 }
 
 interface ActivityItem {
@@ -62,6 +49,44 @@ const LEVEL_STYLES = [
   "bg-[#26a641] border border-[#39d353]/50",
   "bg-[#39d353] border border-emerald-400",
 ];
+
+function generateDefaultDays(): ContributionDay[] {
+  const days: ContributionDay[] = [];
+  for (let i = 364; i >= 0; i--) {
+    const d = new Date();
+    d.setUTCDate(d.getUTCDate() - i);
+    days.push({
+      date: d.toISOString().split("T")[0],
+      count: 0,
+      level: 0,
+    });
+  }
+  return days;
+}
+
+const INITIAL_FALLBACK: GithubData = {
+  days: generateDefaultDays(),
+  total: 81,
+  publicRepos: 14,
+  events: [
+    {
+      id: "ev-1",
+      badge: "Push",
+      text: "Pushed commits to kauxync",
+      detail: "feat: add leetcode activity dashboard and upgrade github contributions",
+      createdAt: new Date().toISOString(),
+      url: "https://github.com/kauxync/kauxync",
+    },
+    {
+      id: "ev-2",
+      badge: "Push",
+      text: "Pushed 1 commit to omni-article",
+      detail: "Update project metadata and translation engine",
+      createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+      url: "https://github.com/kauxync/omni-article",
+    },
+  ],
+};
 
 function timeAgo(iso: string): string {
   const seconds = Math.max(
@@ -151,166 +176,54 @@ function processCalendar(days: ContributionDay[]): {
   };
 }
 
-function parseGithubEvent(event: GithubEvent): ActivityItem | null {
-  const repoName = event.repo.name;
-  const shortRepo = repoName.split("/")[1] ?? repoName;
-  const url = `https://github.com/${repoName}`;
-  const base = {
-    id: event.id,
-    createdAt: event.created_at,
-    url,
-  };
+export function GithubContributions() {
+  const [data, setData] = useState<GithubData>(INITIAL_FALLBACK);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastSynced, setLastSynced] = useState<Date | null>(null);
 
-  switch (event.type) {
-    case "PushEvent": {
-      const commits = event.payload?.commits ?? [];
-      const count = commits.length;
-      const detail = commits[0]?.message.split("\n")[0] ?? "";
-      return {
-        ...base,
-        badge: "Push",
-        text: `Pushed ${count === 1 ? "1 commit" : `${count} commits`} to ${shortRepo}`,
-        detail,
-      };
-    }
-    case "CreateEvent": {
-      const refType = event.payload?.ref_type ?? "branch";
-      const ref = event.payload?.ref ? ` ${event.payload.ref}` : "";
-      return {
-        ...base,
-        badge: "Create",
-        text: `Created ${refType}${ref} in ${shortRepo}`,
-        detail: "",
-      };
-    }
-    case "PullRequestEvent": {
-      const pr = event.payload?.pull_request;
-      const action =
-        event.payload?.action === "closed" && pr?.merged === true
-          ? "Merged"
-          : "Opened";
-      return {
-        ...base,
-        badge: "PR",
-        text: `${action} pull request in ${shortRepo}`,
-        detail: pr ? `#${pr.number} ${pr.title}` : "",
-      };
-    }
-    case "ReleaseEvent": {
-      const tag = event.payload?.release?.tag_name ?? "";
-      return {
-        ...base,
-        badge: "Release",
-        text: `Released ${tag} in ${shortRepo}`,
-        detail: "",
-      };
-    }
-    case "WatchEvent":
-    case "ForkEvent":
-      return {
-        ...base,
-        badge: "Star",
-        text: `Starred ${shortRepo}`,
-        detail: "",
-      };
-    default:
-      return null;
-  }
-}
-
-async function fetchGithubData(username: string): Promise<GithubData> {
-  let days: ContributionDay[] = [];
-  let total = 0;
-  let publicRepos = 14;
-  let events: ActivityItem[] = [];
-
-  // Fetch contributions
-  try {
-    const res = await fetch(
-      `https://github-contributions-api.jogruber.de/v4/${username}?y=last`,
-      {
-        headers: { "User-Agent": siteConfig.url.replace(/^https?:\/\//, "") },
-        next: { revalidate: 3600 },
-      },
-    );
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data.contributions)) {
-        days = data.contributions;
-        total =
-          data.total?.lastYear ??
-          days.reduce((acc, curr) => acc + curr.count, 0);
-      }
-    }
-  } catch (err) {
-    console.warn("Could not fetch GitHub contributions:", err);
-  }
-
-  // Fetch user profile
-  try {
-    const res = await fetch(`https://api.github.com/users/${username}`, {
-      headers: { "User-Agent": siteConfig.url.replace(/^https?:\/\//, "") },
-      next: { revalidate: 3600 },
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (typeof data.public_repos === "number") {
-        publicRepos = data.public_repos;
-      }
-    }
-  } catch (err) {
-    console.warn("Could not fetch GitHub profile stats:", err);
-  }
-
-  // Fetch recent public events
-  try {
-    const res = await fetch(
-      `https://api.github.com/users/${username}/events/public?per_page=20`,
-      {
-        headers: { "User-Agent": siteConfig.url.replace(/^https?:\/\//, "") },
-        next: { revalidate: 1800 },
-      },
-    );
-    if (res.ok) {
-      const rawEvents: GithubEvent[] = await res.json();
-      if (Array.isArray(rawEvents)) {
-        events = rawEvents
-          .map(parseGithubEvent)
-          .filter((item): item is ActivityItem => item !== null)
-          .slice(0, 6);
-      }
-    }
-  } catch (err) {
-    console.warn("Could not fetch GitHub events:", err);
-  }
-
-  // Fallback if needed
-  if (days.length === 0) {
-    total = 81;
-    for (let i = 364; i >= 0; i--) {
-      const d = new Date();
-      d.setUTCDate(d.getUTCDate() - i);
-      days.push({
-        date: d.toISOString().split("T")[0],
-        count: i % 5 === 0 ? 1 : 0,
-        level: i % 5 === 0 ? 1 : 0,
-      });
-    }
-  }
-
-  return {
-    days,
-    total,
-    publicRepos,
-    events,
-  };
-}
-
-export async function GithubContributions() {
   const github = getSocial("github");
-  const username = new URL(github.url).pathname.replace(/\//g, "") || "kauxync";
-  const { days, total, publicRepos, events } = await fetchGithubData(username);
+  const username =
+    new URL(github.url).pathname.replace(/\//g, "") || "kauxync";
 
+  const syncData = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await fetch("/api/github", {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          setData(json.data);
+          setLastSynced(new Date());
+        }
+      }
+    } catch (err) {
+      console.warn("Could not sync live GitHub data:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    // 1. Initial live fetch on mount
+    syncData();
+
+    // 2. Auto refresh when user switches back to this browser tab
+    const handleFocus = () => syncData();
+    window.addEventListener("focus", handleFocus);
+
+    // 3. Periodic polling every 45 seconds
+    const interval = setInterval(syncData, 45000);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      clearInterval(interval);
+    };
+  }, [syncData]);
+
+  const { days, total, publicRepos, events } = data;
   const { weeks, monthLabels, activeDays, maxStreak } = processCalendar(days);
 
   // SVG ring calculations for Overview circle
@@ -334,6 +247,22 @@ export async function GithubContributions() {
               <div className="flex items-center gap-2">
                 <IconGithub className="h-4 w-4 text-foreground" />
                 <p className="eyebrow">Open Source</p>
+                <button
+                  type="button"
+                  onClick={syncData}
+                  disabled={isRefreshing}
+                  title={
+                    lastSynced
+                      ? `Last synced: ${lastSynced.toLocaleTimeString()} (click to refresh)`
+                      : "Click to refresh live stats"
+                  }
+                  className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 transition-colors hover:bg-emerald-500/20 dark:text-emerald-400"
+                >
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full bg-emerald-500 ${isRefreshing ? "animate-spin" : "animate-pulse"}`}
+                  />
+                  <span>{isRefreshing ? "Syncing..." : "Live"}</span>
+                </button>
               </div>
               <h2 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
                 GitHub Activity
