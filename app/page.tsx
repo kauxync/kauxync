@@ -7,7 +7,7 @@ import { Technology } from "@/components/sections/technology";
 import { FeaturedWork } from "@/components/sections/featured-work";
 import { Timeline } from "@/components/sections/timeline";
 import { GithubContributions } from "@/components/sections/github-contributions";
-import { GithubActivity } from "@/components/sections/github-activity";
+import { LeetcodeActivity } from "@/components/sections/leetcode-activity";
 import { LatestWriting } from "@/components/sections/latest-writing";
 import { Currently } from "@/components/sections/currently";
 import { Guestbook } from "@/components/sections/guestbook";
@@ -26,7 +26,7 @@ export default function HomePage() {
       <Philosophy />
       <Timeline />
       <GithubContributions />
-      <GithubActivity />
+      <LeetcodeActivity />
       <LatestWriting />
       <Currently />
       <Guestbook />

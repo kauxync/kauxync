@@ -5,6 +5,7 @@ export type SocialIconKey =
   | "x"
   | "youtube"
   | "aws"
+  | "leetcode"
   | "mail";
 
 export interface SocialLink {
@@ -56,6 +57,13 @@ export const socialLinks: SocialLink[] = [
     url: "https://builder.aws.com/community/@kauxync",
     handle: "@kauxync",
     icon: "aws",
+    external: true,
+  },
+  {
+    name: "LeetCode",
+    url: "https://leetcode.com/u/kauxync/",
+    handle: "@kauxync",
+    icon: "leetcode",
     external: true,
   },
   {

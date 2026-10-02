@@ -3,7 +3,7 @@ import { projects, projectsContent } from "@/config/projects";
 import { siteConfig } from "@/config/site";
 import { Reveal } from "@/components/ui/reveal";
 import { ProjectCard } from "@/components/ui/project-card";
-import { GithubActivity } from "@/components/sections/github-activity";
+import { LeetcodeActivity } from "@/components/sections/leetcode-activity";
 import { GithubContributions } from "@/components/sections/github-contributions";
 
 const description = `Selected projects by ${siteConfig.realName} — web and mobile applications, developer tools, and digital products built by Kauxync.`;
@@ -71,7 +71,7 @@ export default function ProjectsPage() {
       </section>
 
       <GithubContributions />
-      <GithubActivity />
+      <LeetcodeActivity />
     </>
   );
 }

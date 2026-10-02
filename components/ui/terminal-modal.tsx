@@ -59,6 +59,7 @@ export function TerminalModal() {
           "  stack       - Core tech stack & tools",
           "  projects    - List active projects",
           "  contact     - Display direct contact details",
+          "  leetcode    - LeetCode profile & problem solving stats",
           "  theme       - Cycle color theme palette",
           "  sudo hire-me- Secret unlock",
           "  clear       - Clear screen",
@@ -97,8 +98,19 @@ export function TerminalModal() {
         out = [
           `Direct Email : ${siteConfig.email}`,
           "GitHub       : https://github.com/kauxync",
+          "LeetCode     : https://leetcode.com/u/kauxync/",
           "LinkedIn     : https://linkedin.com/in/kauxync",
           "AWS Builder  : https://builder.aws.com/community/@kauxync",
+        ];
+        break;
+
+      case "leetcode":
+      case "dsa":
+        out = [
+          "LeetCode Profile : @kauxync",
+          "Profile URL      : https://leetcode.com/u/kauxync/",
+          "Status           : Active Problem Solver",
+          "Latest Solved    : Two Sum (C)",
         ];
         break;
 

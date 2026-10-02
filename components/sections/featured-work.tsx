@@ -5,7 +5,7 @@ import { ProjectCard } from "@/components/ui/project-card";
 import { ButtonLink } from "@/components/ui/button-link";
 
 export function FeaturedWork() {
-  const featured = projects.filter((p) => p.featured !== false).slice(0, 6);
+  const featured = projects.filter((p) => p.featured !== false).slice(0, 4);
   if (featured.length === 0) return null;
 
   return (

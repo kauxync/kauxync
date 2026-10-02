@@ -17,7 +17,7 @@ export function ProfileAvatar() {
           {/* Geometric Avatar Face */}
           <div className="relative flex h-28 w-28 sm:h-32 sm:w-32 items-center justify-center rounded-none border-2 border-foreground bg-background shadow-[4px_4px_0px_#18181b] dark:shadow-[4px_4px_0px_#ffffff]">
             <span className="font-display text-4xl sm:text-5xl font-black uppercase text-accent tracking-tighter">
-              KX
+              KK
             </span>
             <span
               aria-hidden
