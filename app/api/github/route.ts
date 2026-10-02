@@ -18,11 +18,15 @@ interface GithubEvent {
   created_at: string;
   payload?: {
     commits?: { message: string }[];
+    size?: number;
+    distinct_size?: number;
+    head?: string;
+    before?: string;
     action?: string;
     ref?: string;
     ref_type?: string;
     release?: { tag_name: string };
-    pull_request?: { title: string; number: number; merged?: boolean };
+    pull_request?: { title: string; number: number; merged?: boolean; html_url?: string };
   };
 }
 
@@ -42,6 +46,11 @@ interface GithubData {
   events: ActivityItem[];
 }
 
+// In-memory cache to stay well within GitHub's unauthenticated rate limits (60 req/hr)
+let cachedGithubData: GithubData | null = null;
+let lastCacheTimestamp = 0;
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds
+
 function parseGithubEvent(event: GithubEvent): ActivityItem | null {
   const repoName = event.repo.name;
   const shortRepo = repoName.split("/")[1] ?? repoName;
@@ -55,36 +64,72 @@ function parseGithubEvent(event: GithubEvent): ActivityItem | null {
   switch (event.type) {
     case "PushEvent": {
       const commits = event.payload?.commits ?? [];
-      const count = commits.length;
-      const detail = commits[0]?.message.split("\n")[0] ?? "";
+      const count =
+        event.payload?.size ??
+        event.payload?.distinct_size ??
+        commits.length;
+      const branch = event.payload?.ref
+        ? event.payload.ref.replace(/^refs\/heads\//, "")
+        : "";
+      const head = event.payload?.head ? event.payload.head.slice(0, 7) : "";
+      const commitUrl = event.payload?.head
+        ? `https://github.com/${repoName}/commit/${event.payload.head}`
+        : url;
+
+      let text = `Pushed to ${shortRepo}`;
+      if (count > 0) {
+        text = `Pushed ${count === 1 ? "1 commit" : `${count} commits`} to ${shortRepo}`;
+      } else if (branch) {
+        text = `Pushed to ${shortRepo} (${branch})`;
+      }
+
+      let detail = "";
+      if (commits[0]?.message) {
+        detail = commits[0].message.split("\n")[0];
+      } else if (head) {
+        detail = branch ? `${branch} · commit ${head}` : `commit ${head}`;
+      }
+
       return {
         ...base,
         badge: "Push",
-        text: `Pushed ${count === 1 ? "1 commit" : `${count} commits`} to ${shortRepo}`,
+        text,
         detail,
+        url: commitUrl,
       };
     }
     case "CreateEvent": {
       const refType = event.payload?.ref_type ?? "branch";
       const ref = event.payload?.ref ? ` ${event.payload.ref}` : "";
+      let text = `Created ${refType}${ref} in ${shortRepo}`;
+      if (refType === "repository") {
+        text = `Created repository ${shortRepo}`;
+      }
       return {
         ...base,
         badge: "Create",
-        text: `Created ${refType}${ref} in ${shortRepo}`,
-        detail: "",
+        text,
+        detail:
+          refType === "branch" && event.payload?.ref
+            ? `branch ${event.payload.ref}`
+            : "",
       };
     }
     case "PullRequestEvent": {
       const pr = event.payload?.pull_request;
-      const action =
-        event.payload?.action === "closed" && pr?.merged === true
-          ? "Merged"
+      const isMerged =
+        event.payload?.action === "closed" && pr?.merged === true;
+      const action = isMerged
+        ? "Merged"
+        : event.payload?.action === "closed"
+          ? "Closed"
           : "Opened";
       return {
         ...base,
-        badge: "PR",
+        badge: isMerged ? "Merged" : "PR",
         text: `${action} pull request in ${shortRepo}`,
         detail: pr ? `#${pr.number} ${pr.title}` : "",
+        url: pr?.html_url ?? url,
       };
     }
     case "ReleaseEvent": {
@@ -92,7 +137,7 @@ function parseGithubEvent(event: GithubEvent): ActivityItem | null {
       return {
         ...base,
         badge: "Release",
-        text: `Released ${tag} in ${shortRepo}`,
+        text: `Released ${tag || "new version"} in ${shortRepo}`,
         detail: "",
       };
     }
@@ -124,12 +169,35 @@ export async function GET(req: Request) {
     username = userParam;
   }
 
-  let days: ContributionDay[] = [];
-  let total = 0;
-  let publicRepos = 14;
-  let events: ActivityItem[] = [];
+  // Return cached result if fresh
+  const now = Date.now();
+  if (cachedGithubData && now - lastCacheTimestamp < CACHE_TTL_MS) {
+    return NextResponse.json(
+      { success: true, data: cachedGithubData },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+          "CDN-Cache-Control": "no-store",
+        },
+      },
+    );
+  }
 
-  // 1. Fetch live contributions
+  let days: ContributionDay[] = cachedGithubData?.days ?? [];
+  let total = cachedGithubData?.total ?? 82;
+  let publicRepos = cachedGithubData?.publicRepos ?? 14;
+  let events: ActivityItem[] = cachedGithubData?.events ?? [];
+
+  const ghHeaders: Record<string, string> = {
+    "User-Agent": siteConfig.url.replace(/^https?:\/\//, ""),
+    Accept: "application/vnd.github.v3+json",
+  };
+  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  if (token) {
+    ghHeaders.Authorization = `Bearer ${token}`;
+  }
+
+  // 1. Fetch live contributions from public contributions API
   try {
     const res = await fetch(
       `https://github-contributions-api.jogruber.de/v4/${username}?y=last`,
@@ -140,7 +208,7 @@ export async function GET(req: Request) {
     );
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data.contributions)) {
+      if (Array.isArray(data.contributions) && data.contributions.length > 0) {
         days = data.contributions;
         total =
           data.total?.lastYear ??
@@ -154,7 +222,7 @@ export async function GET(req: Request) {
   // 2. Fetch live user profile
   try {
     const res = await fetch(`https://api.github.com/users/${username}`, {
-      headers: { "User-Agent": siteConfig.url.replace(/^https?:\/\//, "") },
+      headers: ghHeaders,
       cache: "no-store",
     });
     if (res.ok) {
@@ -172,26 +240,28 @@ export async function GET(req: Request) {
     const res = await fetch(
       `https://api.github.com/users/${username}/events/public?per_page=20`,
       {
-        headers: { "User-Agent": siteConfig.url.replace(/^https?:\/\//, "") },
+        headers: ghHeaders,
         cache: "no-store",
       },
     );
     if (res.ok) {
-      const rawEvents: GithubEvent[] = await res.json();
-      if (Array.isArray(rawEvents)) {
-        events = rawEvents
-          .map(parseGithubEvent)
+      const rawEvents = await res.json();
+      if (Array.isArray(rawEvents) && rawEvents.length > 0) {
+        const parsed = rawEvents
+          .map((e: GithubEvent) => parseGithubEvent(e))
           .filter((item): item is ActivityItem => item !== null)
           .slice(0, 6);
+        if (parsed.length > 0) {
+          events = parsed;
+        }
       }
     }
   } catch (err) {
     console.warn("GitHub events live fetch failed:", err);
   }
 
-  // Fallback if needed
+  // Fallback if empty
   if (days.length === 0) {
-    total = 81;
     for (let i = 364; i >= 0; i--) {
       const d = new Date();
       d.setUTCDate(d.getUTCDate() - i);
@@ -203,12 +273,37 @@ export async function GET(req: Request) {
     }
   }
 
+  if (events.length === 0) {
+    events = [
+      {
+        id: "ev-1",
+        badge: "Push",
+        text: "Pushed to kauxync (main)",
+        detail: "main · commit c2e4b34",
+        createdAt: new Date().toISOString(),
+        url: "https://github.com/kauxync/kauxync",
+      },
+      {
+        id: "ev-2",
+        badge: "Push",
+        text: "Pushed to OmniArticle (main)",
+        detail: "main · commit 2f8a45a",
+        createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+        url: "https://github.com/kauxync/OmniArticle",
+      },
+    ];
+  }
+
   const result: GithubData = {
     days,
     total,
     publicRepos,
     events,
   };
+
+  // Update memory cache
+  cachedGithubData = result;
+  lastCacheTimestamp = now;
 
   return NextResponse.json(
     { success: true, data: result },

@@ -66,24 +66,24 @@ function generateDefaultDays(): ContributionDay[] {
 
 const INITIAL_FALLBACK: GithubData = {
   days: generateDefaultDays(),
-  total: 81,
+  total: 82,
   publicRepos: 14,
   events: [
     {
       id: "ev-1",
       badge: "Push",
-      text: "Pushed commits to kauxync",
-      detail: "feat: add leetcode activity dashboard and upgrade github contributions",
+      text: "Pushed to kauxync (main)",
+      detail: "main · commit c2e4b34",
       createdAt: new Date().toISOString(),
       url: "https://github.com/kauxync/kauxync",
     },
     {
       id: "ev-2",
       badge: "Push",
-      text: "Pushed 1 commit to omni-article",
-      detail: "Update project metadata and translation engine",
+      text: "Pushed to OmniArticle (main)",
+      detail: "main · commit 2f8a45a",
       createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-      url: "https://github.com/kauxync/omni-article",
+      url: "https://github.com/kauxync/OmniArticle",
     },
   ],
 };
@@ -402,7 +402,7 @@ export function GithubContributions() {
               {/* Bottom Quick Stats */}
               <div className="mt-5 grid grid-cols-2 gap-2 border-t border-line/60 pt-4 text-xs font-mono">
                 <div className="rounded bg-surface-2 p-2 text-center">
-                  <p className="text-[10px] uppercase text-muted">Total Solved / Repos</p>
+                  <p className="text-[10px] uppercase text-muted">Total Repos</p>
                   <p className="mt-0.5 text-sm font-bold text-foreground">
                     {publicRepos} repos
                   </p>
