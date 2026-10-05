@@ -22,19 +22,6 @@ export const projectsContent = {
 
 export const projects: Project[] = [
   {
-    title: "Project Bihar",
-    summary:
-      "Regional digital transformation initiative and developer collective empowering engineers through accessible technical education, open-source resources, and localized community building.",
-    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Postgres"],
-    status: "LIVE",
-    badge: "Ecosystem Platform",
-    featured: true,
-    links: [
-      { label: "Live Platform", url: "https://projectbihar.org/" },
-      { label: "GitHub", url: "https://github.com/kauxync" },
-    ],
-  },
-  {
     title: "PostPencil",
     summary:
       "Minimalist, distraction-free markdown publishing toolkit and content creation suite designed for modern writers and developers, featuring instant live preview and zero-clutter typography.",
@@ -61,25 +48,13 @@ export const projects: Project[] = [
     ],
   },
   {
-    title: "Velox SaaS Platform",
-    summary:
-      "High-performance, conversion-optimized SaaS marketing platform and component architecture featuring accessible micro-interactions, responsive design patterns, and sub-second load speeds.",
-    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Motion"],
-    status: "PRODUCTION",
-    badge: "Design System",
-    featured: true,
-    links: [
-      { label: "GitHub", url: "https://github.com/kauxync/velox-saas-landing" },
-    ],
-  },
-  {
     title: "Omni Article",
     summary:
       "Universal article reader and multi-language translation platform built to streamline article reading and localization across 30+ languages with clean responsive output, dual-view, and interactive vocabulary.",
     tech: ["JavaScript", "Node.js", "Express", "Vercel"],
     status: "LIVE",
     badge: "Universal Reader",
-    featured: true,
+    featured: false,
     links: [
       { label: "Live App", url: "https://project-omniarticle.kauxync.in/" },
       { label: "GitHub", url: "https://github.com/kauxync/OmniArticle" },
