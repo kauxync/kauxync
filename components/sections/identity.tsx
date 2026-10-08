@@ -1,5 +1,9 @@
+"use client";
+
 import { identityContent } from "@/config/content";
 import { Section } from "@/components/ui/section";
+import { AnimateStagger, AnimateItem } from "@/components/ui/animate-ui";
+import { Card3D, Card3DItem } from "@/components/ui/card-3d";
 
 const CARD_THEMES = [
   {
@@ -36,32 +40,52 @@ export function Identity() {
       heading={identityContent.heading}
       variant="blur"
     >
-      <ul className="grid gap-5 sm:grid-cols-3">
+      <AnimateStagger
+        stagger={0.12}
+        delay={0.08}
+        as="ul"
+        className="grid gap-5 sm:grid-cols-3"
+      >
         {identityContent.blocks.map((block, idx) => {
           const theme = CARD_THEMES[idx % CARD_THEMES.length];
           return (
-            <li
+            <AnimateItem
               key={block.title}
-              className={`card-hover border-2 ${theme.border} ${theme.bg} ${theme.shadow} p-6 sm:p-7 flex flex-col justify-between`}
+              as="li"
+              variant="scale"
+              className="h-full"
             >
-              <div>
-                <span
-                  aria-hidden
-                  className={`inline-flex items-center border px-2.5 py-1 text-xs font-mono font-bold uppercase tracking-wider ${theme.chip}`}
-                >
-                  {block.index}
-                </span>
-                <h3 className={`mt-4 font-display text-2xl font-bold tracking-tight ${theme.title}`}>
-                  {block.title}
-                </h3>
-                <p className={`mt-3 text-[0.975rem] leading-relaxed font-medium ${theme.body}`}>
-                  {block.body}
-                </p>
-              </div>
-            </li>
+              <Card3D
+                maxTilt={12}
+                scale={1.02}
+                containerClassName="h-full"
+                className={`card-hover border-2 ${theme.border} ${theme.bg} ${theme.shadow} p-6 sm:p-7 flex flex-col justify-between h-full`}
+              >
+                <div>
+                  <Card3DItem translateZ={25}>
+                    <span
+                      aria-hidden
+                      className={`inline-flex items-center border px-2.5 py-1 text-xs font-mono font-bold uppercase tracking-wider ${theme.chip}`}
+                    >
+                      {block.index}
+                    </span>
+                  </Card3DItem>
+                  <Card3DItem translateZ={30}>
+                    <h3 className={`mt-4 font-display text-2xl font-bold tracking-tight ${theme.title}`}>
+                      {block.title}
+                    </h3>
+                  </Card3DItem>
+                  <Card3DItem translateZ={15}>
+                    <p className={`mt-3 text-[0.975rem] leading-relaxed font-medium ${theme.body}`}>
+                      {block.body}
+                    </p>
+                  </Card3DItem>
+                </div>
+              </Card3D>
+            </AnimateItem>
           );
         })}
-      </ul>
+      </AnimateStagger>
     </Section>
   );
 }

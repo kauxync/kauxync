@@ -1,49 +1,71 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { type ReactNode } from "react";
+import { motion, useReducedMotion } from "motion/react";
 
 interface RevealProps {
   children: ReactNode;
   className?: string;
   delay?: number;
-  variant?: "up" | "blur" | "scale";
+  variant?: "up" | "blur" | "scale" | "fade" | "left" | "right";
+  duration?: number;
 }
 
-export function Reveal({ children, className, delay = 0, variant = "up" }: RevealProps) {
-  const ref = useRef<HTMLDivElement | null>(null);
+export function Reveal({
+  children,
+  className = "",
+  delay = 0,
+  variant = "up",
+  duration = 0.65,
+}: RevealProps) {
+  const prefersReduced = useReducedMotion();
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+  const variantStyles = {
+    up: {
+      initial: { opacity: 0, y: 24 },
+      visible: { opacity: 1, y: 0 },
+    },
+    blur: {
+      initial: { opacity: 0, y: 16, filter: "blur(8px)" },
+      visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+    },
+    scale: {
+      initial: { opacity: 0, scale: 0.94, y: 14 },
+      visible: { opacity: 1, scale: 1, y: 0 },
+    },
+    fade: {
+      initial: { opacity: 0 },
+      visible: { opacity: 1 },
+    },
+    left: {
+      initial: { opacity: 0, x: -24 },
+      visible: { opacity: 1, x: 0 },
+    },
+    right: {
+      initial: { opacity: 0, x: 24 },
+      visible: { opacity: 1, x: 0 },
+    },
+  };
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reduced.matches || !("IntersectionObserver" in window)) {
-      el.classList.add("is-visible");
-      return;
-    }
+  if (prefersReduced) {
+    return <div className={className}>{children}</div>;
+  }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            el.classList.add("is-visible");
-            observer.disconnect();
-          }
-        }
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -6% 0px" }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const style: CSSProperties | undefined =
-    delay > 0 ? ({ "--delay": `${delay}ms` } as CSSProperties) : undefined;
+  const { initial, visible } = variantStyles[variant] ?? variantStyles.up;
 
   return (
-    <div ref={ref} data-reveal={variant} className={className} style={style}>
+    <motion.div
+      initial={initial}
+      whileInView={visible}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{
+        duration,
+        delay: delay > 0 ? delay / 1000 : 0,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+      className={className}
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }

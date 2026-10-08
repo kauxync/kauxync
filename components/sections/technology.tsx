@@ -1,5 +1,8 @@
+"use client";
+
 import { technologyContent } from "@/config/content";
 import { Section } from "@/components/ui/section";
+import { AnimateStagger, AnimateItem } from "@/components/ui/animate-ui";
 
 const GROUP_STYLES: Record<string, { badge: string; chip: string }> = {
   Frontend: {
@@ -36,12 +39,19 @@ export function Technology() {
       index={technologyContent.index}
       heading={technologyContent.heading}
     >
-      <ul className="divide-y divide-line border-y border-line">
+      <AnimateStagger
+        stagger={0.1}
+        delay={0.05}
+        as="ul"
+        className="divide-y divide-line border-y border-line"
+      >
         {technologyContent.groups.map((group) => {
           const style = GROUP_STYLES[group.label] ?? DEFAULT_STYLE;
           return (
-            <li
+            <AnimateItem
               key={group.label}
+              as="li"
+              variant="up"
               className="grid gap-3 py-5 sm:grid-cols-[9.5rem_1fr] sm:items-center sm:gap-8 sm:py-6"
             >
               <div className="flex items-center gap-2">
@@ -50,20 +60,26 @@ export function Technology() {
                   {group.label}
                 </span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <AnimateStagger
+                stagger={0.04}
+                delay={0.02}
+                className="flex flex-wrap gap-2"
+              >
                 {group.items.map((item) => (
-                  <span
+                  <AnimateItem
                     key={item}
+                    as="span"
+                    variant="badge"
                     className={`inline-flex items-center border px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider transition-all duration-150 hover:-translate-y-0.5 shadow-[2px_2px_0px_rgba(0,0,0,0.06)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] ${style.chip}`}
                   >
                     {item}
-                  </span>
+                  </AnimateItem>
                 ))}
-              </div>
-            </li>
+              </AnimateStagger>
+            </AnimateItem>
           );
         })}
-      </ul>
+      </AnimateStagger>
     </Section>
   );
 }

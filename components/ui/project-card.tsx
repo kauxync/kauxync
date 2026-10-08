@@ -1,11 +1,13 @@
-import { Reveal } from "@/components/ui/reveal";
+"use client";
+
 import { IconArrowUpRight } from "@/components/ui/icons";
 import type { Project } from "@/config/projects";
+import { AnimateStagger, AnimateItem } from "@/components/ui/animate-ui";
+import { Card3D, Card3DItem } from "@/components/ui/card-3d";
 
 interface ProjectCardProps {
   project: Project;
   index: number;
-  delay?: number;
 }
 
 const PROJECT_THEMES = [
@@ -71,62 +73,78 @@ const PROJECT_THEMES = [
   },
 ];
 
-export function ProjectCard({ project, index, delay = 0 }: ProjectCardProps) {
+export function ProjectCard({ project, index }: ProjectCardProps) {
   const { title, summary, tech, status, links } = project;
   const theme = PROJECT_THEMES[index % PROJECT_THEMES.length];
 
   return (
-    <Reveal delay={delay} variant="scale" className="h-full">
-      <article
-        className={`card-hover flex h-full flex-col border-2 ${theme.border} ${theme.bg} ${theme.shadow} p-6 sm:p-7`}
-      >
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center border border-foreground bg-background px-2.5 py-0.5 text-xs font-mono font-bold">
-              {String(index + 1).padStart(2, "0")}
-            </span>
-            {project.badge ? (
-              <span
-                className={`inline-flex items-center border px-2.5 py-0.5 text-[0.6875rem] font-mono font-bold uppercase tracking-wider ${theme.badge}`}
-              >
-                {project.badge}
-              </span>
-            ) : null}
-          </div>
-          {status ? (
-            <span className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-muted">
-              <span
-                aria-hidden
-                className={`dot-pulse h-2 w-2 rounded-full ${theme.pulse}`}
-              />
-              {status}
+    <Card3D
+      maxTilt={9}
+      scale={1.015}
+      containerClassName="h-full"
+      className={`card-hover flex h-full flex-col border-2 ${theme.border} ${theme.bg} ${theme.shadow} p-6 sm:p-7`}
+    >
+      <Card3DItem translateZ={15} className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center border border-foreground bg-background px-2.5 py-0.5 text-xs font-mono font-bold shadow-[2px_2px_0px_#18181b]">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          {project.badge ? (
+            <span
+              className={`inline-flex items-center border px-2.5 py-0.5 text-[0.6875rem] font-mono font-bold uppercase tracking-wider ${theme.badge}`}
+            >
+              {project.badge}
             </span>
           ) : null}
         </div>
+        {status ? (
+          <span className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-muted">
+            <span
+              aria-hidden
+              className={`dot-pulse h-2 w-2 rounded-full ${theme.pulse}`}
+            />
+            {status}
+          </span>
+        ) : null}
+      </Card3DItem>
 
+      <Card3DItem translateZ={25}>
         <h2 className="mt-4 font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           {title}
         </h2>
+      </Card3DItem>
 
-        <p className="mt-3 flex-1 text-sm leading-relaxed text-foreground/80 sm:text-base">
+      <Card3DItem translateZ={15} className="flex-1">
+        <p className="mt-3 text-sm leading-relaxed text-foreground/80 sm:text-base">
           {summary}
         </p>
+      </Card3DItem>
 
-        {tech.length > 0 ? (
-          <ul className="mt-5 flex flex-wrap gap-1.5">
+      {tech.length > 0 ? (
+        <Card3DItem translateZ={20}>
+          <AnimateStagger
+            stagger={0.03}
+            delay={0.05}
+            as="ul"
+            className="mt-5 flex flex-wrap gap-1.5"
+          >
             {tech.map((item) => (
-              <li
+              <AnimateItem
                 key={item}
+                as="li"
+                variant="badge"
                 className={`inline-flex items-center border px-2.5 py-1 text-xs font-mono font-semibold uppercase tracking-wider ${theme.chip}`}
               >
                 {item}
-              </li>
+              </AnimateItem>
             ))}
-          </ul>
-        ) : null}
+          </AnimateStagger>
+        </Card3DItem>
+      ) : null}
 
-        {links && links.length > 0 ? (
-          <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-line/80 pt-4">
+      {links && links.length > 0 ? (
+        <Card3DItem translateZ={25} className="mt-6 border-t border-line/80 pt-4">
+          <ul className="flex flex-wrap gap-x-5 gap-y-2">
             {links.map((link) => (
               <li key={link.url}>
                 <a
@@ -142,8 +160,8 @@ export function ProjectCard({ project, index, delay = 0 }: ProjectCardProps) {
               </li>
             ))}
           </ul>
-        ) : null}
-      </article>
-    </Reveal>
+        </Card3DItem>
+      ) : null}
+    </Card3D>
   );
 }

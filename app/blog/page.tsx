@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/posts";
 import { siteConfig } from "@/config/site";
-import { Reveal } from "@/components/ui/reveal";
 import { BlogList } from "@/components/ui/blog-list";
 import { BLOG_PAGE_SIZE } from "@/lib/post-utils";
+import { AnimateStagger, AnimateItem } from "@/components/ui/animate-ui";
 
 const description =
   "Notes on building software, developer tools, and digital products — written by Kauxync.";
@@ -20,7 +20,12 @@ export async function generateMetadata({
   return {
     title: `Blog — ${siteConfig.name}`,
     description,
-    alternates: { canonical },
+    alternates: {
+      canonical,
+      types: {
+        "application/rss+xml": "/blog/rss.xml",
+      },
+    },
     openGraph: {
       type: "website",
       siteName: siteConfig.name,
@@ -36,6 +41,12 @@ export async function generateMetadata({
           alt: `${siteConfig.name} — Blog`,
         },
       ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Blog — ${siteConfig.name}`,
+      description,
+      images: ["/og/og.png"],
     },
   };
 }
@@ -56,20 +67,73 @@ export default async function BlogPage({
     currentPage * BLOG_PAGE_SIZE,
   );
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: siteConfig.url,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Blog",
+            item: `${siteConfig.url}/blog`,
+          },
+        ],
+      },
+      {
+        "@type": "Blog",
+        name: `${siteConfig.name} Blog`,
+        description,
+        url: `${siteConfig.url}/blog`,
+        author: {
+          "@type": "Person",
+          name: siteConfig.realName,
+        },
+        blogPost: all.map((post) => ({
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.description,
+          url: `${siteConfig.url}/blog/${post.slug}`,
+          datePublished: post.date,
+        })),
+      },
+    ],
+  };
+
   return (
     <>
+      <script
+        id="blog-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <section id="top" className="relative isolate overflow-hidden border-b border-line">
         <div aria-hidden className="bg-grid pointer-events-none absolute inset-0 -z-10" />
         <div className="container-site pb-12 pt-16 sm:pb-16 sm:pt-24">
-          <Reveal>
-            <p className="eyebrow">Writing</p>
-            <h1 className="mt-4 font-display text-5xl font-bold uppercase tracking-tight sm:text-6xl md:text-7xl">
-              Blog
-            </h1>
-            <p className="mt-5 max-w-[56ch] text-base leading-relaxed text-muted sm:text-lg">
-              Notes on building software, developer tools, and digital products.
-            </p>
-          </Reveal>
+          <AnimateStagger stagger={0.08} delay={0.05}>
+            <AnimateItem variant="up">
+              <p className="eyebrow">Writing</p>
+            </AnimateItem>
+            <AnimateItem variant="up">
+              <h1 className="mt-4 font-display text-5xl font-bold uppercase tracking-tight sm:text-6xl md:text-7xl">
+                Blog
+              </h1>
+            </AnimateItem>
+            <AnimateItem variant="up">
+              <p className="mt-5 max-w-[56ch] text-base leading-relaxed text-muted sm:text-lg">
+                Notes on building software, developer tools, and digital products.
+              </p>
+            </AnimateItem>
+          </AnimateStagger>
         </div>
       </section>
 

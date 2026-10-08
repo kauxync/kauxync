@@ -9,6 +9,7 @@ import { mdxComponents } from "@/components/ui/mdx";
 import { ReadingProgress } from "@/components/ui/reading-progress";
 import { TableOfContents } from "@/components/ui/table-of-contents";
 import { PostShare } from "@/components/ui/post-share";
+import { AnimateStagger, AnimateItem, AnimateIn } from "@/components/ui/animate-ui";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -70,34 +71,72 @@ export default async function PostPage({ params }: PageProps) {
     ? `${siteConfig.url}${post.ogImage.startsWith("/") ? "" : "/"}${post.ogImage}`
     : `${siteConfig.url}/og/og.png`;
 
+  const words = post.content.trim().split(/\s+/).length;
+
   const articleJsonLd = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.description,
-    image: [ogImageUrl],
-    datePublished: post.date,
-    dateModified: post.date,
-    author: {
-      "@type": "Person",
-      name: author,
-      url: siteConfig.url,
-    },
-    publisher: {
-      "@type": "Person",
-      name: siteConfig.realName,
-      url: siteConfig.url,
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `${siteConfig.url}/blog/${post.slug}`,
-    },
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: siteConfig.url,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Blog",
+            item: `${siteConfig.url}/blog`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: post.title,
+            item: `${siteConfig.url}/blog/${post.slug}`,
+          },
+        ],
+      },
+      {
+        "@type": "BlogPosting",
+        "@id": `${siteConfig.url}/blog/${post.slug}#article`,
+        headline: post.title,
+        description: post.description,
+        image: [ogImageUrl],
+        datePublished: post.date,
+        dateModified: post.date,
+        inLanguage: "en-US",
+        wordCount: words,
+        keywords: post.tags?.join(", "),
+        author: {
+          "@type": "Person",
+          name: author,
+          url: siteConfig.url,
+        },
+        publisher: {
+          "@type": "Person",
+          name: siteConfig.realName,
+          url: siteConfig.url,
+          logo: {
+            "@type": "ImageObject",
+            url: `${siteConfig.url}/og/og.png`,
+          },
+        },
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": `${siteConfig.url}/blog/${post.slug}`,
+        },
+      },
+    ],
   };
 
   return (
     <>
       <ReadingProgress />
       <script
+        id="article-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c"),
@@ -105,40 +144,50 @@ export default async function PostPage({ params }: PageProps) {
       />
       <section id="top" className="border-b border-line">
         <div className="container-site pb-10 pt-16 sm:pb-12 sm:pt-24">
-          <nav aria-label="Breadcrumb">
-            <Link
-              href="/blog"
-              className="eyebrow transition-colors duration-200 hover:text-accent link-underline"
-            >
-              Blog
-            </Link>
-          </nav>
-          <h1 className="mt-5 max-w-[20ch] font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-[2.75rem]">
-            {post.title}
-          </h1>
-          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="eyebrow">By {author}</span>
-            <time dateTime={post.date} className="eyebrow">
-              {formatDate(post.date)}
-            </time>
-            <span className="eyebrow" aria-label="Reading time">
-              {readingTime(post.content)} min read
-            </span>
-            {post.tags && post.tags.length > 0 ? (
-              <p className="flex flex-wrap gap-1.5">
-                {post.tags.map((tag) => (
-                  <span key={tag} className="chip">
-                    {tag}
-                  </span>
-                ))}
-              </p>
+          <AnimateStagger stagger={0.08} delay={0.05}>
+            <AnimateItem variant="up">
+              <nav aria-label="Breadcrumb">
+                <Link
+                  href="/blog"
+                  className="eyebrow transition-colors duration-200 hover:text-accent link-underline"
+                >
+                  Blog
+                </Link>
+              </nav>
+            </AnimateItem>
+            <AnimateItem variant="up">
+              <h1 className="mt-5 max-w-[20ch] font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-[2.75rem]">
+                {post.title}
+              </h1>
+            </AnimateItem>
+            <AnimateItem variant="up">
+              <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+                <span className="eyebrow">By {author}</span>
+                <time dateTime={post.date} className="eyebrow">
+                  {formatDate(post.date)}
+                </time>
+                <span className="eyebrow" aria-label="Reading time">
+                  {readingTime(post.content)} min read
+                </span>
+                {post.tags && post.tags.length > 0 ? (
+                  <p className="flex flex-wrap gap-1.5">
+                    {post.tags.map((tag) => (
+                      <span key={tag} className="chip">
+                        {tag}
+                      </span>
+                    ))}
+                  </p>
+                ) : null}
+              </div>
+            </AnimateItem>
+            {post.description ? (
+              <AnimateItem variant="up">
+                <p className="mt-6 max-w-[62ch] text-base leading-relaxed text-muted sm:text-lg">
+                  {post.description}
+                </p>
+              </AnimateItem>
             ) : null}
-          </div>
-          {post.description ? (
-            <p className="mt-6 max-w-[62ch] text-base leading-relaxed text-muted sm:text-lg">
-              {post.description}
-            </p>
-          ) : null}
+          </AnimateStagger>
         </div>
       </section>
 
@@ -146,12 +195,14 @@ export default async function PostPage({ params }: PageProps) {
         <div className="container-site section-pad">
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_13rem]">
             <div className="min-w-0 max-w-[68ch]">
-              <article className="prose-post">
-                <MDXRemote source={post.content} components={mdxComponents} />
-              </article>
+              <AnimateIn variant="fade" delay={0.1} duration={0.7}>
+                <article className="prose-post">
+                  <MDXRemote source={post.content} components={mdxComponents} />
+                </article>
+              </AnimateIn>
 
               {/* Share & Feedback */}
-              <div className="mt-14 border-t border-line pt-8">
+              <AnimateIn variant="up" delay={0.15} className="mt-14 border-t border-line pt-8">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <PostShare title={post.title} slug={post.slug} />
                   <Link
@@ -161,10 +212,10 @@ export default async function PostPage({ params }: PageProps) {
                     ← Back to all posts
                   </Link>
                 </div>
-              </div>
+              </AnimateIn>
 
               {/* Author Card & Discussion Prompt */}
-              <div className="card mt-10 border border-foreground bg-surface p-6 shadow-[var(--shadow-card)] sm:p-7">
+              <AnimateIn variant="scale" delay={0.2} className="card mt-10 border border-foreground bg-surface p-6 shadow-[var(--shadow-card)] sm:p-7">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center border border-foreground bg-surface-2 font-display text-2xl font-bold uppercase text-accent">
                     K
@@ -198,7 +249,7 @@ export default async function PostPage({ params }: PageProps) {
                     @kauxync on X →
                   </a>
                 </div>
-              </div>
+              </AnimateIn>
             </div>
 
             {toc.length > 0 ? (

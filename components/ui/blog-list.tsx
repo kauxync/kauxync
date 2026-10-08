@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { PostMeta } from "@/lib/post-utils";
 import { PostRow } from "@/components/ui/post-row";
+import { AnimateStagger, AnimateIn } from "@/components/ui/animate-ui";
 
 interface BlogListProps {
   posts: PostMeta[];
@@ -71,7 +72,7 @@ export function BlogList({ posts, pagePosts, currentPage, totalPages }: BlogList
 
   return (
     <>
-      <div className="mb-8 flex items-center gap-4">
+      <AnimateIn variant="up" className="mb-8 flex items-center gap-4">
         <input
           ref={inputRef}
           value={query}
@@ -84,14 +85,20 @@ export function BlogList({ posts, pagePosts, currentPage, totalPages }: BlogList
         <span className="eyebrow">
           {filtered ? `${filtered.length}/${posts.length}` : `Page ${currentPage}/${totalPages}`}
         </span>
-      </div>
+      </AnimateIn>
 
       {visible.length > 0 ? (
-        <ul className="divide-y divide-line border-y border-line">
+        <AnimateStagger
+          key={query}
+          stagger={0.08}
+          delay={0.05}
+          as="ul"
+          className="divide-y divide-line border-y border-line"
+        >
           {visible.map((post, index) => (
             <PostRow key={post.slug} post={post} index={index} />
           ))}
-        </ul>
+        </AnimateStagger>
       ) : (
         <p className="border-y border-line py-10 text-sm text-muted">
           No posts match “{query}”.
@@ -99,7 +106,7 @@ export function BlogList({ posts, pagePosts, currentPage, totalPages }: BlogList
       )}
 
       {!filtered && totalPages > 1 ? (
-        <nav aria-label="Blog pages" className="mt-10 flex flex-wrap items-center gap-2">
+        <AnimateIn variant="up" delay={0.15} as="nav" aria-label="Blog pages" className="mt-10 flex flex-wrap items-center gap-2">
           {currentPage > 1 ? (
             <Link
               href={pageHref(currentPage - 1)}
@@ -137,7 +144,7 @@ export function BlogList({ posts, pagePosts, currentPage, totalPages }: BlogList
               Next →
             </Link>
           ) : null}
-        </nav>
+        </AnimateIn>
       ) : null}
     </>
   );

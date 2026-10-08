@@ -3,6 +3,7 @@ import { writingContent } from "@/config/content";
 import { Section } from "@/components/ui/section";
 import { PostRow } from "@/components/ui/post-row";
 import { ButtonLink } from "@/components/ui/button-link";
+import { AnimateStagger, AnimateIn } from "@/components/ui/animate-ui";
 
 export function LatestWriting() {
   const posts = getAllPosts().slice(0, 2);
@@ -14,16 +15,21 @@ export function LatestWriting() {
       index={writingContent.index}
       heading={writingContent.heading}
     >
-      <ul className="divide-y divide-line border-y border-line">
+      <AnimateStagger
+        stagger={0.12}
+        delay={0.06}
+        as="ul"
+        className="divide-y divide-line border-y border-line"
+      >
         {posts.map((post, index) => (
           <PostRow key={post.slug} post={post} index={index} />
         ))}
-      </ul>
-      <div className="mt-10">
+      </AnimateStagger>
+      <AnimateIn variant="up" delay={0.2} className="mt-10">
         <ButtonLink href="/blog" variant="outline">
           View all posts
         </ButtonLink>
-      </div>
+      </AnimateIn>
     </Section>
   );
 }

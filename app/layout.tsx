@@ -45,7 +45,12 @@ export const metadata: Metadata = {
   authors: [{ name: siteConfig.realName, url: siteConfig.url }],
   creator: siteConfig.realName,
   publisher: siteConfig.realName,
-  alternates: { canonical: "/" },
+  alternates: {
+    canonical: "/",
+    types: {
+      "application/rss+xml": "/blog/rss.xml",
+    },
+  },
   openGraph: {
     type: "website",
     siteName: siteConfig.name,
@@ -58,6 +63,7 @@ export const metadata: Metadata = {
         url: "/og/og.png",
         width: 1200,
         height: 630,
+        type: "image/png",
         alt: `${siteConfig.name} — ${siteConfig.realName}`,
       },
     ],
@@ -66,6 +72,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
+    creator: "@kauxync",
     images: ["/og/og.png"],
   },
   robots: {
@@ -142,6 +149,18 @@ const siteSchema = {
       },
       inLanguage: "en-US",
     },
+    {
+      "@type": "ProfilePage",
+      "@id": `${siteConfig.url}/#profilepage`,
+      url: siteConfig.url,
+      name: siteConfig.title,
+      isPartOf: {
+        "@id": `${siteConfig.url}/#website`,
+      },
+      mainEntity: {
+        "@id": `${siteConfig.url}/#person`,
+      },
+    },
   ],
 };
 
@@ -156,8 +175,11 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${sora.variable} ${ttFirsNeue.variable} ${jetbrainsMono.variable}`}
     >
+      <head>
+        <link rel="alternate" type="application/rss+xml" title={`${siteConfig.name} RSS Feed`} href="/blog/rss.xml" />
+      </head>
       <body className="font-sans">
-        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+        <script id="theme-init" dangerouslySetInnerHTML={{ __html: themeInit }} />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded-md focus:bg-foreground focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-background"
@@ -169,6 +191,7 @@ export default function RootLayout({
         <Footer />
         <BackToTop />
         <script
+          id="site-schema"
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(siteSchema).replace(/</g, "\\u003c"),

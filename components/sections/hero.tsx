@@ -1,3 +1,5 @@
+"use client";
+
 import { siteConfig } from "@/config/site";
 import { getSocial } from "@/config/social";
 import { heroContent } from "@/config/content";
@@ -6,7 +8,8 @@ import { CopyButton } from "@/components/ui/copy-button";
 import { IconGithub } from "@/components/ui/icons";
 import { Magnetic } from "@/components/ui/magnetic";
 import { PronunciationButton } from "@/components/ui/pronunciation-button";
-import { ProfileAvatar } from "@/components/ui/profile-avatar";
+import { Avatar3D } from "@/components/ui/avatar-3d";
+import { AnimateStagger, AnimateItem, AnimateText, AnimateIn } from "@/components/ui/animate-ui";
 
 export function Hero() {
   const github = getSocial("github");
@@ -27,8 +30,9 @@ export function Hero() {
 
       <div className="container-site flex min-h-[calc(100svh-3.5rem)] flex-col justify-center py-16 sm:min-h-[calc(100svh-4rem)] sm:py-20">
         <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-14">
-          <div className="space-y-6">
-            <div className="hero-in hero-delay-1 flex flex-wrap items-center gap-3">
+          <AnimateStagger stagger={0.09} delay={0.05} className="space-y-6">
+            {/* Badges */}
+            <AnimateItem variant="badge" className="flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-2 border-2 border-foreground bg-[#f3e8ff] text-[#581c87] px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider shadow-[3px_3px_0px_#9333ea] dark:bg-[#2e1065] dark:text-[#f3e8ff] dark:shadow-[3px_3px_0px_#a855f7]">
                 <span aria-hidden className="h-2 w-2 rounded-full bg-[#9333ea]" />
                 {siteConfig.identity}
@@ -37,11 +41,12 @@ export function Hero() {
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                 Available for new projects & roles
               </span>
-            </div>
+            </AnimateItem>
 
-            <div className="hero-in hero-delay-3 space-y-3">
+            {/* Heading & Nickname */}
+            <AnimateItem variant="up" className="space-y-3">
               <h1 className="font-display text-[clamp(2.8rem,8vw,5.75rem)] font-bold uppercase leading-[0.92] tracking-tight">
-                {siteConfig.realName}
+                <AnimateText text={siteConfig.realName} delay={0.15} stagger={0.08} as="span" />
               </h1>
               <div className="flex flex-wrap items-center gap-3 pt-1">
                 <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-muted sm:text-sm">
@@ -49,18 +54,25 @@ export function Hero() {
                 </span>
                 <PronunciationButton />
               </div>
-            </div>
+            </AnimateItem>
 
-            <p className="hero-in hero-delay-4 max-w-[50ch] text-base leading-relaxed text-muted sm:text-lg">
-              {heroContent.tagline}
-            </p>
+            {/* Tagline */}
+            <AnimateItem variant="up">
+              <p className="max-w-[50ch] text-base leading-relaxed text-muted sm:text-lg">
+                {heroContent.tagline}
+              </p>
+            </AnimateItem>
 
-            <p className="hero-in hero-delay-4 text-xs font-mono text-muted/90 flex items-center gap-2">
-              <span className="inline-block h-2 w-2 bg-[#fbbf24] border border-foreground" />
-              <span>Based in India (IST · UTC+5:30) · Open to Remote worldwide</span>
-            </p>
+            {/* Location & Status */}
+            <AnimateItem variant="up">
+              <p className="text-xs font-mono text-muted/90 flex items-center gap-2">
+                <span className="inline-block h-2 w-2 bg-[#fbbf24] border border-foreground" />
+                <span>Based in India (IST · UTC+5:30) · Open to Remote worldwide</span>
+              </p>
+            </AnimateItem>
 
-            <div className="hero-in hero-delay-5 flex flex-wrap items-center gap-3.5 pt-2">
+            {/* CTA Buttons */}
+            <AnimateItem variant="up" className="flex flex-wrap items-center gap-3.5 pt-2">
               <Magnetic>
                 <ButtonLink
                   href={github.url}
@@ -88,18 +100,23 @@ export function Hero() {
                   className="!border-2 !border-foreground bg-surface hover:!bg-[#f3e8ff] dark:hover:!bg-[#2e1065] !shadow-[4px_4px_0px_#9333ea]"
                 />
               </Magnetic>
-            </div>
-          </div>
+            </AnimateItem>
+          </AnimateStagger>
 
-          {/* Right Column: Profile Card Avatar */}
-          <div className="hero-in hero-delay-4 hidden lg:block">
-            <ProfileAvatar />
-          </div>
+          {/* Right Column / Mobile Centered: 3D Interactive Avatar */}
+          <AnimateIn variant="scale" delay={0.25} duration={0.8} className="w-full flex justify-center lg:justify-center lg:-translate-x-8 xl:-translate-x-12">
+            <Avatar3D />
+          </AnimateIn>
         </div>
 
         {/* 4-Stat Box Banner */}
-        <dl className="hero-in hero-delay-6 mt-8 grid grid-cols-2 divide-y divide-line border-2 border-foreground bg-surface shadow-[6px_6px_0px_#18181b] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.2)] sm:grid-cols-4 sm:divide-x sm:divide-y-0">
-          <div className="p-4 sm:px-5">
+        <AnimateStagger
+          stagger={0.08}
+          delay={0.35}
+          as="dl"
+          className="mt-8 grid grid-cols-2 divide-y divide-line border-2 border-foreground bg-surface shadow-[6px_6px_0px_#18181b] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.2)] sm:grid-cols-4 sm:divide-x sm:divide-y-0"
+        >
+          <AnimateItem variant="up" className="p-4 sm:px-5">
             <dt className="eyebrow flex items-center gap-1.5 text-[#15803d] dark:text-[#4ade80]">
               <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
               Status
@@ -107,8 +124,8 @@ export function Hero() {
             <dd className="mt-1.5 text-xs font-bold uppercase tracking-wide text-foreground">
               Open to Work
             </dd>
-          </div>
-          <div className="p-4 sm:px-5">
+          </AnimateItem>
+          <AnimateItem variant="up" className="p-4 sm:px-5">
             <dt className="eyebrow flex items-center gap-1.5 text-[#7e22ce] dark:text-[#c084fc]">
               <span className="h-1.5 w-1.5 rounded-full bg-[#9333ea]" />
               Focus
@@ -116,8 +133,8 @@ export function Hero() {
             <dd className="mt-1.5 text-xs font-bold uppercase tracking-wide text-foreground">
               Full-Stack & Systems
             </dd>
-          </div>
-          <div className="p-4 sm:px-5">
+          </AnimateItem>
+          <AnimateItem variant="up" className="p-4 sm:px-5">
             <dt className="eyebrow flex items-center gap-1.5 text-[#b45309] dark:text-[#fbbf24]">
               <span className="h-1.5 w-1.5 rounded-full bg-[#d97706]" />
               Motto
@@ -125,8 +142,8 @@ export function Hero() {
             <dd className="mt-1.5 text-xs font-bold uppercase tracking-wide text-foreground">
               {siteConfig.brandStatement}
             </dd>
-          </div>
-          <div className="p-4 sm:px-5">
+          </AnimateItem>
+          <AnimateItem variant="up" className="p-4 sm:px-5">
             <dt className="eyebrow flex items-center gap-1.5 text-[#0369a1] dark:text-[#38bdf8]">
               <span className="h-1.5 w-1.5 rounded-full bg-[#0284c7]" />
               Direct Contact
@@ -139,8 +156,8 @@ export function Hero() {
                 {siteConfig.email}
               </a>
             </dd>
-          </div>
-        </dl>
+          </AnimateItem>
+        </AnimateStagger>
       </div>
     </section>
   );

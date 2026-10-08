@@ -1,26 +1,29 @@
+"use client";
+
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { getAllPosts } from "@/lib/posts";
 import { SiteLogo, SiteLogoMark } from "@/components/ui/logo";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { SoundToggle } from "@/components/ui/sound-toggle";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { CommandPalette, type PaletteItem } from "@/components/ui/command-palette";
+import { AnimateStagger, AnimateItem } from "@/components/ui/animate-ui";
 
-export function Header() {
-  const paletteItems: PaletteItem[] = [
+interface HeaderProps {
+  paletteItems?: PaletteItem[];
+}
+
+export function Header({ paletteItems = [] }: HeaderProps) {
+  const defaultItems: PaletteItem[] = [
     { label: "Home", hint: "Page", href: "/" },
     ...siteConfig.nav.map((item) => ({
       label: item.label,
       hint: "Page",
       href: item.href,
     })),
-    ...getAllPosts().map((post) => ({
-      label: post.title,
-      hint: "Post",
-      href: `/blog/${post.slug}`,
-    })),
   ];
+
+  const items = paletteItems.length > 0 ? paletteItems : defaultItems;
 
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-background/75 backdrop-blur-md">
@@ -34,7 +37,7 @@ export function Header() {
           <SiteLogo className="hidden w-32 sm:block lg:w-36" />
         </Link>
 
-        <div className="flex items-center gap-1 sm:gap-2">
+        <AnimateStagger stagger={0.05} delay={0.02} className="flex items-center gap-1 sm:gap-2">
           <nav aria-label="Primary" className="hidden sm:block">
             <ul className="flex items-center">
               {siteConfig.nav.map((item) => (
@@ -49,11 +52,13 @@ export function Header() {
               ))}
             </ul>
           </nav>
-          <MobileNav items={siteConfig.nav} />
-          <CommandPalette items={paletteItems} />
-          <SoundToggle />
-          <ThemeToggle />
-        </div>
+          <AnimateItem variant="fade" className="flex items-center gap-1 sm:gap-2">
+            <MobileNav items={siteConfig.nav} />
+            <CommandPalette items={items} />
+            <SoundToggle />
+            <ThemeToggle />
+          </AnimateItem>
+        </AnimateStagger>
       </div>
     </header>
   );

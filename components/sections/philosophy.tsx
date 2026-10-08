@@ -1,5 +1,8 @@
+"use client";
+
 import { philosophyContent } from "@/config/content";
 import { Section } from "@/components/ui/section";
+import { AnimateStagger, AnimateItem } from "@/components/ui/animate-ui";
 
 const PRINCIPLES = [
   {
@@ -55,10 +58,15 @@ export function Philosophy() {
       index={philosophyContent.index}
       heading={philosophyContent.heading}
     >
-      <div className="grid gap-5 sm:grid-cols-2">
+      <AnimateStagger
+        stagger={0.12}
+        delay={0.06}
+        className="grid gap-5 sm:grid-cols-2"
+      >
         {PRINCIPLES.map((item) => (
-          <div
+          <AnimateItem
             key={item.title}
+            variant="scale"
             className={`card-hover border-2 border-foreground ${item.theme.bg} ${item.theme.shadow} p-6 sm:p-7 flex flex-col justify-between`}
           >
             <div>
@@ -75,9 +83,9 @@ export function Philosophy() {
                 {item.body}
               </p>
             </div>
-          </div>
+          </AnimateItem>
         ))}
-      </div>
+      </AnimateStagger>
     </Section>
   );
 }

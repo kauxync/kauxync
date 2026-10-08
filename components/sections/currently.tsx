@@ -1,5 +1,8 @@
+"use client";
+
 import { currentlyContent } from "@/config/content";
 import { Section } from "@/components/ui/section";
+import { AnimateStagger, AnimateItem } from "@/components/ui/animate-ui";
 
 const CURRENTLY_THEMES = [
   {
@@ -40,12 +43,19 @@ export function Currently() {
       heading={currentlyContent.heading}
       variant="blur"
     >
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <AnimateStagger
+        stagger={0.1}
+        delay={0.06}
+        as="ul"
+        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
         {currentlyContent.items.map((item, idx) => {
           const theme = CURRENTLY_THEMES[idx % CURRENTLY_THEMES.length];
           return (
-            <li
+            <AnimateItem
               key={item.status}
+              as="li"
+              variant="scale"
               className={`card-hover border-2 ${theme.border} ${theme.bg} ${theme.shadow} flex items-start gap-3.5 p-5`}
             >
               <span
@@ -60,10 +70,10 @@ export function Currently() {
                   {item.detail}
                 </p>
               </div>
-            </li>
+            </AnimateItem>
           );
         })}
-      </ul>
+      </AnimateStagger>
       <p className="mt-6 text-xs font-mono text-muted flex items-center gap-2">
         <span className="h-1.5 w-1.5 bg-[#fbbf24] inline-block" />
         <span>Inspired by the /now movement · Actively updated</span>

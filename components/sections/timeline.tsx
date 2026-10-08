@@ -1,5 +1,8 @@
+"use client";
+
 import { timelineContent } from "@/config/content";
 import { Section } from "@/components/ui/section";
+import { AnimateStagger, AnimateItem } from "@/components/ui/animate-ui";
 
 const MILESTONES = [
   {
@@ -62,9 +65,17 @@ export function Timeline() {
       heading={timelineContent.heading}
     >
       <div className="relative pl-6 sm:pl-8 before:absolute before:bottom-0 before:top-2 before:left-[11px] sm:before:left-[15px] before:w-[3px] before:bg-foreground">
-        <div className="space-y-8 sm:space-y-10">
+        <AnimateStagger
+          stagger={0.14}
+          delay={0.06}
+          className="space-y-8 sm:space-y-10"
+        >
           {MILESTONES.map((item) => (
-            <div key={item.year} className="relative group">
+            <AnimateItem
+              key={item.year}
+              variant="left"
+              className="relative group"
+            >
               {/* Timeline marker node */}
               <div
                 aria-hidden
@@ -95,9 +106,9 @@ export function Timeline() {
                   {item.description}
                 </p>
               </div>
-            </div>
+            </AnimateItem>
           ))}
-        </div>
+        </AnimateStagger>
       </div>
     </Section>
   );

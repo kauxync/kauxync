@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { guestbookContent } from "@/config/content";
 import { Section } from "@/components/ui/section";
 import { IconGithub } from "@/components/ui/icons";
+import { AnimateStagger, AnimateCard } from "@/components/ui/animate-ui";
 
 interface GuestbookEntry {
   name: string;
@@ -108,40 +110,54 @@ export function Guestbook() {
         {/* Guestbook Wall */}
         <div className="space-y-4">
           <p className="eyebrow">Recent Signatures</p>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {entries.map((entry, idx) => (
-              <div
-                key={`${entry.name}-${idx}`}
-                className={`card-hover border-2 border-foreground p-5 ${entry.theme.bg} ${entry.theme.shadow} flex flex-col justify-between`}
-              >
-                <p className="text-sm font-medium text-foreground/90 leading-relaxed italic">
-                  &ldquo;{entry.message}&rdquo;
-                </p>
+          <AnimateStagger
+            stagger={0.1}
+            delay={0.05}
+            className="grid gap-4 sm:grid-cols-2"
+          >
+            <AnimatePresence mode="popLayout">
+              {entries.map((entry, idx) => (
+                <motion.div
+                  key={`${entry.name}-${idx}`}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9, y: 16 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  className={`card-hover border-2 border-foreground p-5 ${entry.theme.bg} ${entry.theme.shadow} flex flex-col justify-between`}
+                >
+                  <p className="text-sm font-medium text-foreground/90 leading-relaxed italic">
+                    &ldquo;{entry.message}&rdquo;
+                  </p>
 
-                <div className="mt-4 flex items-center justify-between border-t border-line/80 pt-3">
-                  <div>
-                    <p className="font-display text-sm font-bold text-foreground">
-                      {entry.name}
-                    </p>
-                    {entry.handle ? (
-                      <p className="font-mono text-[0.6875rem] text-muted">
-                        {entry.handle}
+                  <div className="mt-4 flex items-center justify-between border-t border-line/80 pt-3">
+                    <div>
+                      <p className="font-display text-sm font-bold text-foreground">
+                        {entry.name}
                       </p>
-                    ) : null}
+                      {entry.handle ? (
+                        <p className="font-mono text-[0.6875rem] text-muted">
+                          {entry.handle}
+                        </p>
+                      ) : null}
+                    </div>
+                    <span
+                      className={`border px-2 py-0.5 text-[0.625rem] font-mono font-bold uppercase tracking-wider ${entry.theme.tag}`}
+                    >
+                      {entry.date}
+                    </span>
                   </div>
-                  <span
-                    className={`border px-2 py-0.5 text-[0.625rem] font-mono font-bold uppercase tracking-wider ${entry.theme.tag}`}
-                  >
-                    {entry.date}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </AnimateStagger>
         </div>
 
         {/* Sign the Guestbook Card */}
-        <aside className="card border-2 border-foreground bg-surface p-6 shadow-[6px_6px_0px_#18181b] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.2)]">
+        <AnimateCard
+          delay={0.15}
+          className="card border-2 border-foreground bg-surface p-6 shadow-[6px_6px_0px_#18181b] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.2)]"
+        >
           <div className="border-b border-line pb-4">
             <span className="border-2 border-foreground bg-[#fbbf24] px-2.5 py-0.5 text-[0.6875rem] font-mono font-bold uppercase tracking-wider text-[#18181b]">
               Interactive Wall
@@ -155,7 +171,11 @@ export function Guestbook() {
           </div>
 
           {isSigned ? (
-            <div className="py-6 text-center space-y-3">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="py-6 text-center space-y-3"
+            >
               <span className="text-2xl">🎉</span>
               <h4 className="font-display text-base font-bold text-foreground">
                 You&apos;re on the wall!
@@ -170,7 +190,7 @@ export function Guestbook() {
               >
                 Sign again
               </button>
-            </div>
+            </motion.div>
           ) : (
             <form onSubmit={handleSubmit} className="mt-5 space-y-4">
               <div>
@@ -246,7 +266,7 @@ export function Guestbook() {
               Discuss on GitHub Discussions →
             </a>
           </div>
-        </aside>
+        </AnimateCard>
       </div>
     </Section>
   );
