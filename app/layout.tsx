@@ -109,7 +109,7 @@ export const viewport: Viewport = {
 
 const themeInit = `(function(){try{var k=${JSON.stringify(
   siteConfig.themeStorageKey
-)};var s=localStorage.getItem(k);var d=s?s==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;var e=document.documentElement;e.classList.toggle("dark",d);e.style.colorScheme=d?"dark":"light";var p=localStorage.getItem("kauxync-palette");if(p){e.setAttribute("data-palette",p);}e.classList.add("js");}catch(e){document.documentElement.classList.add("js");}})();`;
+)};var s=localStorage.getItem(k);var d=s==="dark";var e=document.documentElement;e.classList.toggle("dark",d);e.style.colorScheme=d?"dark":"light";var p=localStorage.getItem("kauxync-palette");if(p){e.setAttribute("data-palette",p);}e.classList.add("js");}catch(e){document.documentElement.classList.add("js");}})();`;
 
 const siteSchema = {
   "@context": "https://schema.org",
